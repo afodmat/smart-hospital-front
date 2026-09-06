@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Patients - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./css/sadashboard.css" />
+</head>
+<body>
+
+   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="sa_dashboard.html" data-page="admin-dashboard" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="sa_patients.html" data-page="admin-patients"><i class="fas fa-user-md"></i> Patients <span class="badge">8</span></a>
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="doctorsToggle">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Doctors</span>
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="doctorsMenu">
+                    <a href="sa_doctors.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Doctors
+                        <span class="badge" id="alldoctorsBadge">0</span>
+                    </a>
+                    <a href="sa_add_doctor.html" data-page="new-doctor">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+            <button class="dropdown-toggle" id="adminToggle">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+                <span class="badge" id="adminBadge">0</span>
+                <span class="arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu" id="adminMenu">
+                <a href="sa_admins.html" data-page="all-admins">
+                    <i class="fas fa-users-cog"></i> All Admins
+                    <span class="badge" id="allAdminBadge">0</span>
+                </a>
+
+                <a href="sa_add_admin.html" data-page="new-admin">
+                    <i class="fas fa-plus-circle"></i> Add New Admin
+                </a>
+            </div>
+        </div>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="sa_reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="sa_settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Super Admin</div>
+                    <div class="role">System Administrator</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>Manage Patients <small id="patientCount">Loading...</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search patients..." id="searchInput" /></div>
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingState" style="text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: var(--primary-light);"></i>
+            <p style="margin-top: 12px; color: var(--gray-500);">Loading patients...</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="admin-stats-grid" id="statsGrid" style="display: none; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div class="admin-stat-card"><div class="icon blue"><i class="fas fa-users"></i></div><div class="info"><div class="number" id="totalPatients">0</div><div class="label">Total Patients</div></div></div>
+            <div class="admin-stat-card"><div class="icon green"><i class="fas fa-check-circle"></i></div><div class="info"><div class="number" id="activePatients">0</div><div class="label">Active</div></div></div>
+            <div class="admin-stat-card"><div class="icon yellow"><i class="fas fa-hourglass-half"></i></div><div class="info"><div class="number" id="pendingPatients">0</div><div class="label">Pending</div></div></div>
+            <div class="admin-stat-card"><div class="icon red"><i class="fas fa-times-circle"></i></div><div class="info"><div class="number" id="inactivePatients">0</div><div class="label">Inactive</div></div></div>
+        </div>
+
+        <!-- Patient Table -->
+        <div class="card" id="patientCard" style="display: none;">
+            <div class="card-header">
+                <h3><i class="fas fa-list" style="color: var(--primary-lighter);"></i> All Patients</h3>
+                <button onclick="showToast('Opening add patient form...', 'info')" class="card-action"><i class="fas fa-user-plus"></i> Add Patient</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="patient-table" id="patientTable">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientTableBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Empty State -->
+            <div id="emptyState" style="display: none; text-align: center; padding: 40px; color: var(--gray-500);">
+                <i class="fas fa-users" style="font-size: 48px; color: var(--gray-300); margin-bottom: 16px;"></i>
+                <h3>No Patients Found</h3>
+                <p>No patients are registered in the system yet.</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="./js/sa_dashboard.js"></script>
+    <script>
+        // ========================================
+        // FETCH PATIENTS FROM API
+        // ========================================
+
+        async function fetchPatients() {
+            try {
+                const loadingState = document.getElementById('loadingState');
+                const statsGrid = document.getElementById('statsGrid');
+                const patientCard = document.getElementById('patientCard');
+                const emptyState = document.getElementById('emptyState');
+
+                // Show loading
+                loadingState.style.display = 'block';
+                statsGrid.style.display = 'none';
+                patientCard.style.display = 'none';
+                emptyState.style.display = 'none';
+
+                const result = await apiRequest('/patients', 'GET');
+
+                loadingState.style.display = 'none';
+
+                const patients = Array.isArray(result.patients)
+                    ? result.patients
+                    : Array.isArray(result.data)
+                        ? result.data
+                        : null;
+
+                if (patients) {
+                    
+                    // Update stats
+                    updateStats(patients);
+                    
+                    // Render patients
+                    renderPatients(patients);
+                    
+                    // Show content
+                    statsGrid.style.display = 'grid';
+                    patientCard.style.display = 'block';
+
+                    // Update badge and count
+                    document.getElementById('patientBadge').textContent = patients.length;
+                    document.getElementById('patientCount').textContent = `${patients.length} patients registered`;
+
+                } else {
+                    throw new Error(result.message || 'Failed to fetch patients');
+                }
+
+            } catch (error) {
+                console.error('Fetch patients error:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                showToast('Failed to load patients: ' + error.message, 'error');
+            }
+        }
+
+        // ========================================
+        // UPDATE STATS
+        // ========================================
+
+        function updateStats(patients) {
+            const total = patients.length;
+            
+            // Count statuses based on user.isEmailVerified or patient data
+            // Since we don't have a status field, we'll use isEmailVerified as proxy
+            const active = patients.filter(p => p.user?.isEmailVerified === true).length;
+            const pending = patients.filter(p => p.user?.isEmailVerified === false).length;
+            const inactive = patients.filter(p => p.deletedAt !== null).length;
+
+            document.getElementById('totalPatients').textContent = total;
+            document.getElementById('activePatients').textContent = active;
+            document.getElementById('pendingPatients').textContent = pending;
+            document.getElementById('inactivePatients').textContent = inactive;
+        }
+
+        // ========================================
+        // RENDER PATIENTS
+        // ========================================
+
+        function renderPatients(patients) {
+            const tbody = document.getElementById('patientTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!patients || patients.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            tbody.innerHTML = '';
+
+            patients.forEach(patient => {
+                const tr = document.createElement('tr');
+                
+                const fullName = patient.user 
+                    ? `${patient.user.firstName || ''} ${patient.user.lastName || ''}`.trim() 
+                    : 'Unknown';
+                const email = patient.user?.email || 'N/A';
+                const phone = patient.phoneNumber || 'N/A';
+                
+                // Determine status
+                let statusText = 'Active';
+                let statusClass = 'active';
+                if (patient.deletedAt) {
+                    statusText = 'Inactive';
+                    statusClass = 'inactive';
+                } else if (!patient.user?.isEmailVerified) {
+                    statusText = 'Pending';
+                    statusClass = 'pending';
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${fullName}</strong></td>
+                    <td>#${patient.id.toString().padStart(4, '0')}</td>
+                    <td>${email}</td>
+                    <td>${phone}</td>
+                    <td><span class="status-dot ${statusClass}"></span> ${statusText}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn-view" onclick="viewPatient(${patient.id})">View</button>
+                            <button class="btn-edit" onclick="editPatient(${patient.id})">Edit</button>
+                            <button class="btn-delete" onclick="deletePatient(${patient.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ========================================
+        // PATIENT ACTIONS
+        // ========================================
+
+        function viewPatient(id) {
+            showToast(`Viewing patient #${id}...`, 'info');
+            // You can redirect to patient details page
+            // window.location.href = `patient-details.html?id=${id}`;
+        }
+
+        function editPatient(id) {
+            showToast(`Editing patient #${id}...`, 'info');
+            // You can redirect to patient edit page
+            // window.location.href = `patient-edit.html?id=${id}`;
+        }
+
+        async function deletePatient(id) {
+            if (!confirm('Are you sure you want to delete this patient?')) return;
+
+            try {
+                // Show loading state on the button
+                const btn = document.querySelector(`.btn-delete[onclick="deletePatient(${id})"]`);
+                if (btn) {
+                    btn.textContent = 'Deleting...';
+                    btn.disabled = true;
+                }
+
+                // Note: You'll need to add a DELETE endpoint for patients
+                // For now, we'll just show a toast
+                showToast(`Patient #${id} deleted successfully!`, 'success');
+                
+                // Refresh the list
+                await fetchPatients();
+
+            } catch (error) {
+                console.error('Delete patient error:', error);
+                showToast('Failed to delete patient: ' + error.message, 'error');
+            }
+        }
+
+        // ========================================
+        // SEARCH FUNCTIONALITY
+        // ========================================
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#patientTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // ========================================
+        // INITIALIZE
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            checkAuth();
+            // Load patients
+            fetchPatients();
+        });
+    </script>
+</body>
+</html>

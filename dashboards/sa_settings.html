@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Settings - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="sadashboard.css" />
+</head>
+<body>
+
+    <!-- SIDEBAR (same) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="admin-dashboard.html" data-page="admin-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="admin-doctors.html" data-page="admin-doctors"><i class="fas fa-user-md"></i> Doctors <span class="badge">8</span></a>
+            <a href="admin-patients.html" data-page="admin-patients"><i class="fas fa-users"></i> Patients <span class="badge">24</span></a>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="admin-departments.html" data-page="admin-departments"><i class="fas fa-building"></i> Departments <span class="badge">5</span></a>
+            <a href="admin-reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="admin-settings.html" data-page="admin-settings" class="active"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info"><div class="name" id="sidebarName">Super Admin</div><div class="role">System Administrator</div></div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>System Settings <small>Configure hospital system</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <div class="settings-grid">
+            <!-- Navigation -->
+            <div class="settings-nav">
+                <a href="#" class="nav-item active" data-panel="general"><i class="fas fa-sliders-h"></i> General</a>
+                <a href="#" class="nav-item" data-panel="hospital"><i class="fas fa-hospital"></i> Hospital Info</a>
+                <a href="#" class="nav-item" data-panel="security"><i class="fas fa-shield-alt"></i> Security</a>
+                <a href="#" class="nav-item" data-panel="notifications"><i class="fas fa-bell"></i> Notifications</a>
+                <a href="#" class="nav-item" data-panel="integrations"><i class="fas fa-plug"></i> Integrations</a>
+                <a href="#" class="nav-item" data-panel="backup"><i class="fas fa-database"></i> Backup</a>
+            </div>
+
+            <!-- Panels -->
+            <div class="settings-panel" id="settingsPanel">
+                <!-- General -->
+                <div class="panel-content" id="panel-general">
+                    <div class="panel-title">General Settings</div>
+                    <div class="panel-subtitle">Configure basic system preferences</div>
+                    <div class="form-group"><label>Hospital Name</label><input type="text" value="Smart Hospital" /></div>
+                    <div class="form-group"><label>System Timezone</label><select><option value="UTC">UTC</option><option value="EST" selected>Eastern Time (EST)</option><option value="CST">Central Time (CST)</option><option value="PST">Pacific Time (PST)</option></select></div>
+                    <div class="form-group"><label>Date Format</label><select><option value="MM/DD/YYYY" selected>MM/DD/YYYY</option><option value="DD/MM/YYYY">DD/MM/YYYY</option><option value="YYYY-MM-DD">YYYY-MM-DD</option></select></div>
+                    <div class="form-group"><label>Language</label><select><option value="en" selected>English</option><option value="es">Spanish</option><option value="fr">French</option></select></div>
+                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <!-- Hospital -->
+                <div class="panel-content" id="panel-hospital" style="display: none;">
+                    <div class="panel-title">Hospital Information</div>
+                    <div class="panel-subtitle">Manage hospital details and contact information</div>
+                    <div class="form-group"><label>Hospital Name</label><input type="text" value="Smart Hospital" /></div>
+                    <div class="form-group"><label>Address</label><input type="text" value="123 Medical Center Drive, Los Angeles, CA 90001" /></div>
+                    <div class="form-group"><label>Phone Number</label><input type="text" value="+1 (555) 123-4567" /></div>
+                    <div class="form-group"><label>Email</label><input type="email" value="info@smarthospital.com" /></div>
+                    <div class="form-group"><label>Website</label><input type="text" value="https://www.smarthospital.com" /></div>
+                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <!-- Security -->
+                <div class="panel-content" id="panel-security" style="display: none;">
+                    <div class="panel-title">Security Settings</div>
+                    <div class="panel-subtitle">Manage system security and access controls</div>
+                    <div class="toggle-row"><div class="info"><div class="title">Two-Factor Authentication</div><div class="desc">Require 2FA for all admin accounts</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Session Timeout</div><div class="desc">Auto-logout after 30 minutes of inactivity</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">IP Whitelisting</div><div class="desc">Only allow access from authorized IP addresses</div></div><div class="toggle" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Audit Logging</div><div class="desc">Record all system activities for compliance</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="form-group" style="margin-top: 16px;"><label>Session Timeout (minutes)</label><input type="number" value="30" /></div>
+                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <!-- Notifications -->
+                <div class="panel-content" id="panel-notifications" style="display: none;">
+                    <div class="panel-title">Notification Settings</div>
+                    <div class="panel-subtitle">Configure system notifications and alerts</div>
+                    <div class="toggle-row"><div class="info"><div class="title">Email Notifications</div><div class="desc">Send system notifications via email</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">SMS Alerts</div><div class="desc">Send critical alerts via SMS</div></div><div class="toggle" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Appointment Reminders</div><div class="desc">Send reminders to patients before appointments</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Low Stock Alerts</div><div class="desc">Notify when medication inventory is low</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <!-- Integrations -->
+                <div class="panel-content" id="panel-integrations" style="display: none;">
+                    <div class="panel-title">Integrations</div>
+                    <div class="panel-subtitle">Connect with third-party services</div>
+                    <div class="toggle-row"><div class="info"><div class="title">Google Calendar</div><div class="desc">Sync appointments with Google Calendar</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Email Service</div><div class="desc">Connect to SMTP email service</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="toggle-row"><div class="info"><div class="title">Payment Gateway</div><div class="desc">Enable online payment processing</div></div><div class="toggle" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="form-group" style="margin-top: 16px;"><label>Google API Key</label><input type="text" placeholder="Enter Google API Key..." /><div class="help-text">Required for Google Calendar integration</div></div>
+                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <!-- Backup -->
+                <div class="panel-content" id="panel-backup" style="display: none;">
+                    <div class="panel-title">Backup & Recovery</div>
+                    <div class="panel-subtitle">Manage system backups and data recovery</div>
+                    <div class="toggle-row"><div class="info"><div class="title">Automatic Backups</div><div class="desc">Schedule daily automatic backups</div></div><div class="toggle active" onclick="toggleSwitch(this)"><div class="thumb"></div></div></div>
+                    <div class="form-group"><label>Backup Frequency</label><select><option value="daily" selected>Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
+                    <div class="form-group"><label>Backup Location</label><select><option value="cloud" selected>Cloud Storage</option><option value="local">Local Server</option><option value="both">Both</option></select></div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+                        <button class="btn-save" onclick="showToast('Creating backup...', 'info')" style="width: auto;"><i class="fas fa-database"></i> Backup Now</button>
+                        <button class="btn-danger" onclick="showToast('Restoring from backup...', 'warning')" style="width: auto;"><i class="fas fa-undo"></i> Restore Backup</button>
+                    </div>
+                    <div style="margin-top: 16px; padding: 12px; background: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 13px; color: var(--gray-500);"><strong>Last Backup:</strong> Oct 22, 2026 02:30 AM</div>
+                        <div style="font-size: 13px; color: var(--gray-500);"><strong>Backup Size:</strong> 245 MB</div>
+                    </div>
+                    <button class="btn-save" onclick="saveSettings()" style="margin-top: 16px;"><i class="fas fa-save"></i> Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Panel Navigation
+        document.querySelectorAll('.settings-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.settings-nav .nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                const panelId = this.dataset.panel;
+                document.querySelectorAll('.panel-content').forEach(p => p.style.display = 'none');
+                document.getElementById('panel-' + panelId).style.display = 'block';
+            });
+        });
+
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+        function saveSettings() { showToast('✅ Settings saved successfully!', 'success'); }
+    </script>
+</body>
+</html>

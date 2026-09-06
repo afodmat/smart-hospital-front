@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Patients - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+
+    <!-- ========================================
+    SIDEBAR
+    ======================================== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients" class="active">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    My Patients
+                    <small>12 patients under your care</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search patients..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Patient Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600;">JS</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px;">John Smith</div>
+                        <div style="font-size: 13px; color: var(--gray-500);">#P-0042 · 45 y/o · Male</div>
+                    </div>
+                    <span style="background: #fee2e2; color: #991b1b; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 600;">Critical</span>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="showToast('Opening John Smith\'s records...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 13px;">📋 Records</button>
+                    <button onclick="showToast('Booking appointment for John Smith...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">📅 Book</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600;">SJ</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px;">Sarah Johnson</div>
+                        <div style="font-size: 13px; color: var(--gray-500);">#P-0087 · 34 y/o · Female</div>
+                    </div>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 600;">High</span>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="showToast('Opening Sarah Johnson\'s records...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 13px;">📋 Records</button>
+                    <button onclick="showToast('Booking appointment for Sarah Johnson...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">📅 Book</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600;">MC</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px;">Michael Chen</div>
+                        <div style="font-size: 13px; color: var(--gray-500);">#P-0156 · 52 y/o · Male</div>
+                    </div>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 600;">High</span>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="showToast('Opening Michael Chen\'s records...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 13px;">📋 Records</button>
+                    <button onclick="showToast('Booking appointment for Michael Chen...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">📅 Book</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600;">ED</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px;">Emily Davis</div>
+                        <div style="font-size: 13px; color: var(--gray-500);">#P-0234 · 28 y/o · Female</div>
+                    </div>
+                    <span style="background: #dbeafe; color: #1d4ed8; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 600;">Medium</span>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="showToast('Opening Emily Davis\'s records...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 13px;">📋 Records</button>
+                    <button onclick="showToast('Booking appointment for Emily Davis...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">📅 Book</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600;">RW</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px;">Robert Wilson</div>
+                        <div style="font-size: 13px; color: var(--gray-500);">#P-0312 · 60 y/o · Male</div>
+                    </div>
+                    <span style="background: #dcfce7; color: #166534; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 600;">Low</span>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="showToast('Opening Robert Wilson\'s records...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 13px;">📋 Records</button>
+                    <button onclick="showToast('Booking appointment for Robert Wilson...', 'info')" style="padding: 6px 14px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">📅 Book</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="./js/doc_dashboard.js"></script>
+</body>
+</html>

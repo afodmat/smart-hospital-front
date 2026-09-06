@@ -1,5 +1,6 @@
 // CONFIGURATION
-const API_BASE_URL = "https://smart-hospital-fet1.onrender.com";
+const API_BASE_URL = 'http://localhost:5001'; 
+
 // UTILITY FUNCTIONS
 function showAlert(elementId, message, type = 'success') {
     const alert = document.getElementById(elementId);
@@ -66,28 +67,25 @@ function clearFieldError(inputId, errorId) {
 }
 
 // AUTH API CALLS
-async function apiRequest(endpoint, method = 'GET', data = null) {
+async function apiRequest(endpoint, method = 'POST', data = null) {
     const url = `${API_BASE_URL}${endpoint}`;
     const options = {
         method,
-        credentials: "include",
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },
     };
-
-    const token = localStorage.getItem("access_token");
-
-    if (token) {
-        options.headers["Authorization"] = `Bearer ${token}`;
-    }
     
     if (data) {
         options.body = JSON.stringify(data);
     }
     
     // Add auth token if available
-    
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
     
     try {
         const response = await fetch(url, options);
@@ -229,31 +227,21 @@ async function handleLogin(event) {
             email,
             password,
         });
-
+        
+        // Store tokens
         localStorage.setItem('access_token', result.accessToken);
         localStorage.setItem('user', JSON.stringify(result.user));
-
-        showAlert(
-            'login-alert',
-            'Login successful! Redirecting...',
-            'success'
-        );
-
-        const dashboard = await apiRequest(
-            '/auth/dashboard',
-            'GET'
-        );
-
-        window.location.href = dashboard.dashboardUrl;
-
+        
+        showAlert('login-alert', 'Login successful! Redirecting...', 'success');
+        
+        // Redirect to dashboard
+        const dashboardUrl = `http://127.0.0.1:5500/smart_hospital_system/frontend/patient_dashboard.html`;
+        setTimeout(() => {
+            window.location.href = dashboardUrl;
+        }, 1000);
+        
     } catch (error) {
-        console.error('Login error:', error);
-
-        showAlert(
-            'login-alert',
-            error.message || 'Invalid email or password.',
-            'error'
-        );
+        showAlert('login-alert', error.message || 'Invalid email or password.', 'error');
     } finally {
         setLoading('login-btn', false);
     }

@@ -1,3 +1,120 @@
+
+
+const API_BASE_URL = 'https://smart-hospital-fet1.onrender.com';
+const FRONTEND_URL = 'https://smart-hospitalsystem.netlify.app';
+
+// AUTHENTICATION
+
+function redirectToLogin() {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
+function checkAuth() {
+  if (!localStorage.getItem("access_token")) {
+    redirectToLogin();
+    return false;
+  }
+  return true;
+}
+
+async function refreshAccessToken() {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) return false;
+
+  const result = await response.json();
+  localStorage.setItem("access_token", result.accessToken);
+  localStorage.setItem("user", JSON.stringify(result.user));
+  return true;
+}
+
+async function apiRequest(endpoint, method = "GET", data = null, retried = false) {
+  const token = localStorage.getItem("access_token");
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...(data ? { body: JSON.stringify(data) } : {}),
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (response.status === 401 && !retried) {
+    const refreshed = await refreshAccessToken();
+
+    if (refreshed) {
+      return apiRequest(endpoint, method, data, true);
+    }
+
+    redirectToLogin();
+    throw new Error("Your session has expired. Please log in again.");
+  }
+
+  if (!response.ok) {
+    throw new Error(result.message || `Request failed (${response.status})`);
+  }
+
+  return result;
+}
+
+// API REQUEST
+
+// async function apiRequest(endpoint, method = 'GET', data = null) {
+//     const url = `${API_BASE_URL}${endpoint}`;
+
+//     const options = {
+//         method,
+//         credentials: 'include',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     };
+
+//     const token = localStorage.getItem('access_token');
+//     if (token) {
+//         options.headers.Authorization = `Bearer ${token}`;
+//     }
+
+//     if (data) {
+//         options.body = JSON.stringify(data);
+//     }
+
+//     try {
+//         const response = await fetch(url, options);
+
+//         const result = await response.json();
+
+//         if (response.status === 401) {
+//             localStorage.removeItem('access_token');
+//             localStorage.removeItem('user');
+//             window.location.href = 'login.html';
+//             throw new Error('Authentication required. Please log in.');
+//         }
+
+//         if (!response.ok) {
+//             throw new Error(
+//                 result.message || `HTTP error ${response.status}`
+//             );
+//         }
+
+//         return result;
+
+//     } catch (error) {
+//         console.error('❌ API Error:', error);
+//         throw error;
+//     }
+// }
+
 // ========================================
 // DOM REFERENCES
 // ========================================
@@ -157,7 +274,7 @@ function loadUserData() {
             const topbarAvatar = document.getElementById('topbarAvatar');
             
             if (nameEl) {
-                nameEl.textContent = `Dr. ${user.lastName || 'Septiannisa'}`;
+                nameEl.textContent = `Dr. ${user.lastName }`;
             }
             if (avatarEl) avatarEl.textContent = initials;
             if (topbarAvatar) topbarAvatar.textContent = initials;
@@ -234,12 +351,204 @@ function initSearch() {
     });
 }
 
+// const DOCTOR_API_BASE_URL = 'http://localhost:5001';
+
+// async function doctorApiRequest(endpoint, method = 'GET', data = null) {
+//     const token = localStorage.getItem('access_token');
+//     const options = {
+//         method,
+//         credentials: 'include',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             ...(token ? { Authorization: `Bearer ${token}` } : {})
+//         }
+//     };
+
+//     if (data) options.body = JSON.stringify(data);
+
+//     const response = await fetch(`${DOCTOR_API_BASE_URL}${endpoint}`, options);
+//     const result = await response.json().catch(() => ({}));
+
+//     if (!response.ok) {
+//         throw new Error(result.message || `Request failed (${response.status})`);
+//     }
+
+//     return result;
+// }
+
+// function appointmentPatient(appointment) {
+//     return appointment.patient?.user || {};
+// }
+
+// function patientName(appointment) {
+//     const patient = appointmentPatient(appointment);
+//     return `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Unknown patient';
+// }
+
+// function appointmentTime(appointment) {
+//     if (!appointment.scheduledAt) return 'Time not set';
+//     return new Date(appointment.scheduledAt).toLocaleString([], {
+//         dateStyle: 'medium',
+//         timeStyle: 'short'
+//     });
+// }
+
+// function appointmentStatus(appointment) {
+//     return String(appointment.status || 'pending').toLowerCase();
+// }
+
+// function renderDoctorAppointments(appointments) {
+//     const items = document.querySelectorAll('.schedule-item');
+//     items.forEach(item => item.remove());
+
+//     const scheduleCard = [...document.querySelectorAll('.card')].find(card =>
+//         card.textContent.includes("Today's Schedule") || card.textContent.includes('Full Schedule')
+//     );
+//     if (!scheduleCard) return;
+
+//     const header = scheduleCard.querySelector('.card-header');
+//     appointments.forEach(appointment => {
+//         const item = document.createElement('div');
+//         const status = appointmentStatus(appointment);
+//         item.className = 'schedule-item';
+//         item.innerHTML = `
+//             <span class="time">${appointmentTime(appointment)}</span>
+//             <span class="status-dot ${status}"></span>
+//             <div class="info">
+//                 <div class="name">${patientName(appointment)}</div>
+//                 <div class="type">${appointment.type || 'Appointment'}${appointment.symptoms ? ` · ${appointment.symptoms}` : ''}</div>
+//             </div>
+//             <span style="font-size: 12px; color: var(--gray-500);">${status}</span>
+//         `;
+//         header.after(item);
+//     });
+
+//     if (!appointments.length) {
+//         const empty = document.createElement('div');
+//         empty.className = 'schedule-item';
+//         empty.textContent = 'No appointments found.';
+//         header.after(empty);
+//     }
+// }
+
+// function renderAllDoctorAppointments(appointments) {
+//     const cards = document.querySelectorAll('.appointment-card');
+//     const container = cards[0]?.parentElement;
+//     cards.forEach(card => card.remove());
+//     if (!container) return;
+
+//     appointments.forEach(appointment => {
+//         const card = document.createElement('div');
+//         const status = appointmentStatus(appointment);
+//         card.className = `appointment-card ${status}`;
+//         card.innerHTML = `
+//             <div><strong>${patientName(appointment)}</strong></div>
+//             <div>${appointmentTime(appointment)}</div>
+//             <div>${appointment.type || 'Appointment'}${appointment.symptoms ? ` · ${appointment.symptoms}` : ''}</div>
+//             <span class="status-badge ${status}">${status}</span>
+//         `;
+//         container.appendChild(card);
+//     });
+// }
+
+// function renderDoctorPatients(appointments) {
+//     const patients = [...new Map(appointments.map(appointment => {
+//         const patient = appointment.patient;
+//         return [patient?.id, patient];
+//     }).filter(([id, patient]) => id && patient)).values()];
+
+//     const grid = document.querySelector('main .main-content > div, main > div[style*="grid-template-columns"]');
+//     if (!grid) return;
+//     const cards = grid.querySelectorAll('.card');
+//     cards.forEach(card => card.remove());
+
+//     patients.forEach(patient => {
+//         const user = patient.user || {};
+//         const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown patient';
+//         const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}` || 'PT';
+//         const card = document.createElement('div');
+//         card.className = 'card';
+//         card.innerHTML = `<div style="display:flex;align-items:center;gap:16px;"><div style="width:50px;height:50px;border-radius:50%;background:var(--primary-lighter);color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;">${initials}</div><div><div style="font-weight:600;font-size:16px;">${name}</div><div style="font-size:13px;color:var(--gray-500);">Patient #${patient.id} · ${user.email || 'No email'}</div></div></div>`;
+//         grid.appendChild(card);
+//     });
+// }
+
+// function updateDoctorAppointmentStats(appointments) {
+//     const counts = {
+//         total: appointments.length,
+//         pending: appointments.filter(item => appointmentStatus(item) === 'pending').length,
+//         confirmed: appointments.filter(item => appointmentStatus(item) === 'confirmed').length,
+//         cancelled: appointments.filter(item => appointmentStatus(item) === 'cancelled').length
+//     };
+
+//     document.querySelectorAll('.stat-card .number').forEach((element, index) => {
+//         const values = [counts.total, counts.pending, counts.confirmed, counts.cancelled];
+//         if (values[index] !== undefined) element.textContent = values[index];
+//     });
+// }
+
+// async function loadDoctorData() {
+//     try {
+//         if (window.location.pathname.split('/').pop() === 'doc_profile.html') {
+//             const profileResult = await doctorApiRequest('/doctors/me');
+//             const doctor = profileResult.data;
+//             const user = doctor.user || {};
+//             const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Doctor';
+//             const values = {
+//                 'Full Name': fullName,
+//                 Email: user.email || 'Not provided',
+//                 Phone: doctor.phoneNumber || 'Not provided',
+//                 Department: doctor.specialty || 'Not provided',
+//                 Specialization: doctor.specialty || 'Not provided',
+//                 'Years Experience': doctor.yearsOfExperience == null ? 'Not provided' : `${doctor.yearsOfExperience} years`
+//             };
+//             document.querySelectorAll('.quick-stat').forEach(row => {
+//                 const label = row.querySelector('.label')?.textContent.trim();
+//                 const value = row.querySelector('.value');
+//                 if (value && values[label] !== undefined) value.textContent = values[label];
+//             });
+//             return;
+//         }
+
+//         const result = await doctorApiRequest('/appointments/doctor/me');
+//         const appointments = result.data || [];
+//         const page = window.location.pathname.split('/').pop();
+
+//         updateDoctorAppointmentStats(appointments);
+
+//         if (page === 'doc_dashboard.html') {
+//             const today = new Date().toDateString();
+//             const todayAppointments = appointments.filter(item => item.scheduledAt && new Date(item.scheduledAt).toDateString() === today);
+//             renderDoctorAppointments(todayAppointments);
+//         } else if (page === 'doc_schedule.html') {
+//             renderDoctorAppointments(appointments);
+//         } else if (page === 'doc_allappointments.html') {
+//             renderAllDoctorAppointments(appointments);
+//         } else if (page === 'doc_mypatients.html') {
+//             renderDoctorPatients(appointments);
+//         }
+//     } catch (error) {
+//         console.error('Failed to load doctor data:', error);
+//         showToast(`Failed to load doctor data: ${error.message}`, 'error');
+//     }
+// }
+
 // ========================================
 // INITIALIZATION
 // ========================================
-document.addEventListener('DOMContentLoaded', function() {
-    loadUserData();
-    highlightActivePage();
-    initStatusToggle();
-    initSearch();
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!checkAuth()) return;
+
+  loadUserData();
+  highlightActivePage();
+  initStatusToggle();
+  initSearch();
+
+  try {
+    const response = await apiRequest("/doctors/me");
+    console.log("Doctor profile loaded:", response);
+  } catch (error) {
+    console.error("Failed to load doctor profile:", error);
+    showToast(error.message, "error");
+  }
 });

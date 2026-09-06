@@ -1,0 +1,839 @@
+<!-- patient_profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Profile</title><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Profile - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/patient_dashboard.css" />
+    
+    <style>
+        /* ========================================
+           PROFILE PAGE SPECIFIC STYLES
+           ======================================== */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        .profile-card .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-card .card-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+            padding: 20px 0 30px;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar-section .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 600;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 20px rgba(44, 110, 156, 0.3);
+        }
+
+        .profile-avatar-section .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .profile-avatar-section .email {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .profile-avatar-section .role-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section .section-title i {
+            color: var(--primary-lighter);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .form-group label .optional {
+            font-weight: 400;
+            color: var(--gray-400);
+            font-size: 11px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--gray-900);
+            transition: var(--transition);
+            background: var(--gray-50);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(44, 110, 156, 0.1);
+            background: white;
+        }
+
+        .form-group input:disabled {
+            background: var(--gray-100);
+            cursor: not-allowed;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group .helper-text {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-save {
+            padding: 12px 32px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            padding: 12px 32px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-edit {
+            padding: 8px 20px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-edit:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-edit.primary {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .btn-edit.primary:hover {
+            background: var(--primary);
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: var(--primary-light);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner p {
+            margin-top: 12px;
+            color: var(--gray-600);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Read-only field styling */
+        .form-group .readonly {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            cursor: default;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+            }
+
+            .profile-actions .btn-save,
+            .profile-actions .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-avatar-section .avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Saving your profile...</p>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>system</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="patient_dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">4</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="patient_myappointment.html" data-page="appointments">
+                        <i class="fas fa-list"></i> My Appointments
+                        <span class="badge">4</span>
+                    </a>
+                    <a href="patient_new_appointment.html" data-page="book-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="#" data-page="medical-records">
+                <i class="fas fa-file-medical-alt"></i> Medical Records
+            </a>
+
+            <a href="patient_prescription.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+            </a>
+
+            <a href="#" data-page="health-analytics">
+                <i class="fas fa-chart-line"></i> Health Analytics
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="patient_profile.html" data-page="profile" class="active">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">3</span>
+            </a>
+
+            <a href="#" data-page="security">
+                <i class="fas fa-shield-alt"></i> Privacy & Security
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SC</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Carpenter</div>
+                    <div class="role">Patient</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Patient Profile
+                    <small>Manage your personal information</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SC</div>
+            </div>
+        </header>
+
+        <!-- Profile Container -->
+        <div class="profile-container">
+            <!-- Left Column - Profile Info -->
+            <div class="profile-card">
+                <div class="profile-avatar-section">
+                    <div class="avatar" id="profileAvatar">SC</div>
+                    <div class="name" id="profileName">Loading...</div>
+                    <div class="email" id="profileEmail">loading@email.com</div>
+                    <span class="role-badge">Patient</span>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-user"></i> Personal Information
+                    </div>
+
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="firstName" value="Loading..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lastName" value="Loading..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Other Names <span class="optional">(optional)</span></label>
+                        <input type="text" id="otherNames" placeholder="Middle names..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" value="loading@email.com" disabled class="readonly" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="dateOfBirth" />
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="">Select...</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+1 234 567 890" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Address</label>
+                        <input type="text" id="currentAddress" placeholder="123 Main St, City, Country" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Additional Info -->
+            <div class="profile-card">
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-ambulance"></i> Emergency Contact
+                    </div>
+
+                    <div class="form-group">
+                        <label>Emergency Contact First Name</label>
+                        <input type="text" id="emergencyContactFirstName" placeholder="First name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Emergency Contact Last Name</label>
+                        <input type="text" id="emergencyContactLastName" placeholder="Last name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Emergency Contact Phone</label>
+                        <input type="tel" id="emergencyContactPhoneNumber" placeholder="+1 234 567 890" />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i> Additional Information
+                    </div>
+
+                    <div class="form-group">
+                        <label>Primary Language</label>
+                        <input type="text" id="primaryLanguage" placeholder="e.g., English, Spanish" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input type="text" id="occupation" placeholder="Your job title" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Living Situation</label>
+                        <textarea id="livingSituation" placeholder="Describe your living situation..."></textarea>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-save" id="saveBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button class="btn-cancel" id="cancelBtn">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/patient_dashboard.js"></script>
+    <script>
+        // ========================================
+        // GLOBALS
+        // ========================================
+
+        let originalData = {};
+        let isEditing = false;
+
+        // ========================================
+        // FETCH PATIENT PROFILE
+        // ========================================
+
+        async function fetchPatientProfile() {
+            try {
+                // First get user data from localStorage
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    const initials = (user.firstName?.[0] || '') + (user.lastName?.[0] || '') || 'P';
+                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Patient';
+
+                    document.getElementById('sidebarAvatar').textContent = initials;
+                    document.getElementById('topbarAvatar').textContent = initials;
+                    document.getElementById('profileAvatar').textContent = initials;
+                    document.getElementById('sidebarName').textContent = fullName;
+                    document.getElementById('profileName').textContent = fullName;
+                    document.getElementById('profileEmail').textContent = user.email || 'No email';
+
+                    document.getElementById('firstName').value = user.firstName || '';
+                    document.getElementById('lastName').value = user.lastName || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('otherNames').value = user.otherNames || '';
+                }
+
+                // Then fetch patient data from API
+                try {
+                    const result = await apiRequest('/patients/me', 'GET');
+                    
+                    if (result.success && result.data) {
+                        const patient = result.data;
+                        
+                        // Update patient fields
+                        document.getElementById('dateOfBirth').value = patient.dateOfBirth 
+                            ? patient.dateOfBirth.split('T')[0] 
+                            : '';
+                        document.getElementById('gender').value = patient.gender || '';
+                        document.getElementById('phoneNumber').value = patient.phoneNumber || '';
+                        document.getElementById('currentAddress').value = patient.currentAddress || '';
+                        document.getElementById('emergencyContactFirstName').value = patient.emergencyContactFirstName || '';
+                        document.getElementById('emergencyContactLastName').value = patient.emergencyContactLastName || '';
+                        document.getElementById('emergencyContactPhoneNumber').value = patient.emergencyContactPhoneNumber || '';
+                        document.getElementById('primaryLanguage').value = patient.primaryLanguage || '';
+                        document.getElementById('occupation').value = patient.occupation || '';
+                        document.getElementById('livingSituation').value = patient.livingSituation || '';
+
+                        // Store original data for reset
+                        originalData = {
+                            firstName: document.getElementById('firstName').value,
+                            lastName: document.getElementById('lastName').value,
+                            otherNames: document.getElementById('otherNames').value,
+                            dateOfBirth: document.getElementById('dateOfBirth').value,
+                            gender: document.getElementById('gender').value,
+                            phoneNumber: document.getElementById('phoneNumber').value,
+                            currentAddress: document.getElementById('currentAddress').value,
+                            emergencyContactFirstName: document.getElementById('emergencyContactFirstName').value,
+                            emergencyContactLastName: document.getElementById('emergencyContactLastName').value,
+                            emergencyContactPhoneNumber: document.getElementById('emergencyContactPhoneNumber').value,
+                            primaryLanguage: document.getElementById('primaryLanguage').value,
+                            occupation: document.getElementById('occupation').value,
+                            livingSituation: document.getElementById('livingSituation').value,
+                        };
+                    }
+                } catch (apiError) {
+                    console.log('Using cached user data from localStorage');
+                }
+
+            } catch (error) {
+                console.error('Fetch profile error:', error);
+                showToast('Failed to load profile data', 'error');
+            }
+        }
+
+        // ========================================
+        // SAVE PROFILE
+        // ========================================
+
+        async function saveProfile() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const saveBtn = document.getElementById('saveBtn');
+
+            // Show loading
+            loadingOverlay.classList.add('active');
+            saveBtn.disabled = true;
+
+            try {
+                const payload = {
+                    dateOfBirth: document.getElementById('dateOfBirth').value || null,
+                    gender: document.getElementById('gender').value || null,
+                    phoneNumber: document.getElementById('phoneNumber').value.trim() || null,
+                    currentAddress: document.getElementById('currentAddress').value.trim() || null,
+                    emergencyContactFirstName: document.getElementById('emergencyContactFirstName').value.trim() || null,
+                    emergencyContactLastName: document.getElementById('emergencyContactLastName').value.trim() || null,
+                    emergencyContactPhoneNumber: document.getElementById('emergencyContactPhoneNumber').value.trim() || null,
+                    primaryLanguage: document.getElementById('primaryLanguage').value.trim() || null,
+                    occupation: document.getElementById('occupation').value.trim() || null,
+                    livingSituation: document.getElementById('livingSituation').value.trim() || null,
+                };
+
+                const result = await apiRequest('/patients/update', 'PUT', payload);
+
+                if (result.success) {
+                    // Update original data
+                    originalData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        otherNames: document.getElementById('otherNames').value,
+                        dateOfBirth: document.getElementById('dateOfBirth').value,
+                        gender: document.getElementById('gender').value,
+                        phoneNumber: document.getElementById('phoneNumber').value,
+                        currentAddress: document.getElementById('currentAddress').value,
+                        emergencyContactFirstName: document.getElementById('emergencyContactFirstName').value,
+                        emergencyContactLastName: document.getElementById('emergencyContactLastName').value,
+                        emergencyContactPhoneNumber: document.getElementById('emergencyContactPhoneNumber').value,
+                        primaryLanguage: document.getElementById('primaryLanguage').value,
+                        occupation: document.getElementById('occupation').value,
+                        livingSituation: document.getElementById('livingSituation').value,
+                    };
+
+                    showToast('✅ Profile updated successfully!', 'success');
+                } else {
+                    showToast('Failed to update profile: ' + (result.message || 'Unknown error'), 'error');
+                }
+
+            } catch (error) {
+                console.error('Save profile error:', error);
+                showToast('Failed to save profile: ' + error.message, 'error');
+            } finally {
+                loadingOverlay.classList.remove('active');
+                saveBtn.disabled = false;
+            }
+        }
+
+        // ========================================
+        // RESET FORM
+        // ========================================
+
+        function resetForm() {
+            document.getElementById('firstName').value = originalData.firstName || '';
+            document.getElementById('lastName').value = originalData.lastName || '';
+            document.getElementById('otherNames').value = originalData.otherNames || '';
+            document.getElementById('dateOfBirth').value = originalData.dateOfBirth || '';
+            document.getElementById('gender').value = originalData.gender || '';
+            document.getElementById('phoneNumber').value = originalData.phoneNumber || '';
+            document.getElementById('currentAddress').value = originalData.currentAddress || '';
+            document.getElementById('emergencyContactFirstName').value = originalData.emergencyContactFirstName || '';
+            document.getElementById('emergencyContactLastName').value = originalData.emergencyContactLastName || '';
+            document.getElementById('emergencyContactPhoneNumber').value = originalData.emergencyContactPhoneNumber || '';
+            document.getElementById('primaryLanguage').value = originalData.primaryLanguage || '';
+            document.getElementById('occupation').value = originalData.occupation || '';
+            document.getElementById('livingSituation').value = originalData.livingSituation || '';
+
+            showToast('Form reset to saved values', 'info');
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchPatientProfile();
+
+            // Save button
+            document.getElementById('saveBtn').addEventListener('click', saveProfile);
+
+            // Cancel/Reset button
+            document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+            // Auto-save indicator - highlight changed fields
+            document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(field => {
+                field.addEventListener('change', function() {
+                    const isChanged = this.value !== originalData[this.id];
+                    this.style.borderColor = isChanged ? 'var(--warning)' : '';
+                    this.style.background = isChanged ? '#fffbeb' : '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+</head>
+<body>
+    <form id="patientProfileForm">
+        <h2>Complete Your Profile</h2>
+        
+        <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dateOfBirth" />
+        </div>
+        
+        <div class="form-group">
+            <label>Gender</label>
+            <select id="gender">
+                <option value="">Select...</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="+1 234 567 890" />
+        </div>
+        
+        <div class="form-group">
+            <label>Current Address</label>
+            <input type="text" id="currentAddress" placeholder="123 Main St, City, Country" />
+        </div>
+        
+        <div class="form-group">
+            <label>Emergency Contact First Name</label>
+            <input type="text" id="emergencyContactFirstName" />
+        </div>
+        
+        <div class="form-group">
+            <label>Emergency Contact Last Name</label>
+            <input type="text" id="emergencyContactLastName" />
+        </div>
+        
+        <div class="form-group">
+            <label>Emergency Contact Phone</label>
+            <input type="tel" id="emergencyContactPhoneNumber" />
+        </div>
+        
+        <div class="form-group">
+            <label>Primary Language</label>
+            <input type="text" id="primaryLanguage" placeholder="English" />
+        </div>
+        
+        <div class="form-group">
+            <label>Occupation</label>
+            <input type="text" id="occupation" />
+        </div>
+        
+        <div class="form-group">
+            <label>Living Situation</label>
+            <textarea id="livingSituation" placeholder="Describe your living situation..."></textarea>
+        </div>
+        
+        <button type="submit">Save Profile</button>
+    </form>
+    
+    <script>
+        document.getElementById('patientProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                dateOfBirth: document.getElementById('dateOfBirth').value || null,
+                gender: document.getElementById('gender').value || null,
+                phoneNumber: document.getElementById('phoneNumber').value.trim() || null,
+                currentAddress: document.getElementById('currentAddress').value.trim() || null,
+                emergencyContactFirstName: document.getElementById('emergencyContactFirstName').value.trim() || null,
+                emergencyContactLastName: document.getElementById('emergencyContactLastName').value.trim() || null,
+                emergencyContactPhoneNumber: document.getElementById('emergencyContactPhoneNumber').value.trim() || null,
+                primaryLanguage: document.getElementById('primaryLanguage').value.trim() || null,
+                occupation: document.getElementById('occupation').value.trim() || null,
+                livingSituation: document.getElementById('livingSituation').value.trim() || null,
+            };
+            
+            try {
+                const result = await apiRequest('/patients/update', 'PUT', formData);
+                showToast('Profile updated successfully!', 'success');
+            } catch (error) {
+                showToast('Failed to update profile', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

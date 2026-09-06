@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Dashboard - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <!-- Dashboard -->
+            <a href="doc_dashboard.html" data-page="doctor-dashboard" class="active">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <!-- Appointments Dropdown -->
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <!-- My Patients -->
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <!-- Prescriptions -->
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <!-- Medical Records -->
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <!-- Profile -->
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <!-- Notifications -->
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Dashboard
+                    <small>Good morning, Dr. Septiannisa</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="searchInput" />
+                </div>
+                <!-- Status Toggle -->
+                <div class="status-toggle" id="statusToggle">
+                    <span class="indicator online" id="statusIndicator"></span>
+                    <span class="status-text" id="statusText">Online</span>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--gray-400);"></i>
+                </div>
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue"><i class="fas fa-users"></i></div>
+                <div class="info">
+                    <div class="number">18</div>
+                    <div class="label">Total Patients Today</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon yellow"><i class="fas fa-hourglass-half"></i></div>
+                <div class="info">
+                    <div class="number">12</div>
+                    <div class="label">Waiting in Queue</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="info">
+                    <div class="number">6</div>
+                    <div class="label">Completed</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon purple"><i class="fas fa-clock"></i></div>
+                <div class="info">
+                    <div class="number">15</div>
+                    <div class="label">Avg. Wait Time (mins)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Main Column -->
+            <div class="main-col">
+                <!-- Status Switch -->
+                <div class="status-switch active" id="statusSwitch">
+                    <span class="status-label">I am <strong>Available</strong> for consultations</span>
+                    <div class="toggle-track active" id="toggleTrack">
+                        <div class="toggle-thumb" id="toggleThumb"></div>
+                    </div>
+                    <span class="status-badge online" id="statusBadge">Online</span>
+                </div>
+
+                <!-- Patient Queue -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-users" style="color: var(--primary-lighter); margin-right: 8px;"></i>Patient Queue</h3>
+                        <span style="font-size: 13px; color: var(--gray-500);">12 patients waiting</span>
+                    </div>
+
+                    <div class="queue-item" data-name="John Smith" data-triage="critical">
+                        <div class="left">
+                            <span class="priority critical"></span>
+                            <div class="info">
+                                <div class="name">John Smith <span style="font-size:12px; color:var(--gray-500);">#P-0042</span></div>
+                                <div class="details">
+                                    Chest pain, shortness of breath
+                                    <span class="triage-badge critical">Critical</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <span class="wait-time">⏱️ 5 mins</span>
+                            <button class="start-btn" onclick="showToast('Starting consultation with John Smith', 'info')">Start</button>
+                        </div>
+                    </div>
+
+                    <div class="queue-item" data-name="Sarah Johnson" data-triage="high">
+                        <div class="left">
+                            <span class="priority high"></span>
+                            <div class="info">
+                                <div class="name">Sarah Johnson <span style="font-size:12px; color:var(--gray-500);">#P-0087</span></div>
+                                <div class="details">
+                                    Severe headache, blurred vision
+                                    <span class="triage-badge high">High</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <span class="wait-time">⏱️ 12 mins</span>
+                            <button class="start-btn" onclick="showToast('Starting consultation with Sarah Johnson', 'info')">Start</button>
+                        </div>
+                    </div>
+
+                    <div class="queue-item" data-name="Michael Chen" data-triage="high">
+                        <div class="left">
+                            <span class="priority high"></span>
+                            <div class="info">
+                                <div class="name">Michael Chen <span style="font-size:12px; color:var(--gray-500);">#P-0156</span></div>
+                                <div class="details">
+                                    Chest discomfort, fatigue
+                                    <span class="triage-badge high">High</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <span class="wait-time">⏱️ 18 mins</span>
+                            <button class="start-btn" onclick="showToast('Starting consultation with Michael Chen', 'info')">Start</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt" style="color: var(--primary-lighter); margin-right: 8px;"></i>Today's Schedule</h3>
+                        <a href="today-schedule.html" class="card-action">View All →</a>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="time">09:00 AM</span>
+                        <span class="status-dot scheduled"></span>
+                        <div class="info">
+                            <div class="name">John Smith</div>
+                            <div class="type">Follow-up · Critical</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="time">10:30 AM</span>
+                        <span class="status-dot scheduled"></span>
+                        <div class="info">
+                            <div class="name">Sarah Johnson</div>
+                            <div class="type">Initial Consultation · High</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="time">12:00 PM</span>
+                        <span class="status-dot completed"></span>
+                        <div class="info">
+                            <div class="name">Michael Chen</div>
+                            <div class="type">Follow-up · High (Completed)</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="time">02:00 PM</span>
+                        <span class="status-dot scheduled"></span>
+                        <div class="info">
+                            <div class="name">Emily Davis</div>
+                            <div class="type">Routine Checkup · Medium</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Column -->
+            <div class="side-col">
+                <!-- Quick Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie" style="color: var(--accent); margin-right: 8px;"></i>Quick Stats</h3>
+                    </div>
+                    <div class="quick-stat"><span class="label">Total Patients Today</span><span class="value">18</span></div>
+                    <div class="quick-stat"><span class="label">Patients Seen</span><span class="value">6</span></div>
+                    <div class="quick-stat"><span class="label">Waiting</span><span class="value">12</span></div>
+                    <div class="quick-stat"><span class="label">Average Duration</span><span class="value">22 mins</span></div>
+                    <div class="quick-stat"><span class="label">Break Time</span><span class="value">12:30 PM - 1:30 PM</span></div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt" style="color: var(--accent); margin-right: 8px;"></i>Quick Actions</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="new-appointment.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-calendar-plus" style="color: var(--primary-lighter);"></i>
+                            <span>Book New Appointment</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                        <a href="my-patients.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-user-md" style="color: var(--success);"></i>
+                            <span>View My Patients</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                        <a href="prescriptions.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-prescription-bottle-alt" style="color: var(--warning);"></i>
+                            <span>Manage Prescriptions</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Today's Summary Card -->
+                <div class="card" style="background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white;">
+                    <div style="text-align: center; padding: 8px 0;">
+                        <div style="font-size: 32px; font-weight: 700;">6/18</div>
+                        <div style="font-size: 14px; opacity: 0.7;">Patients Seen Today</div>
+                        <div style="margin-top: 16px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                                <span>⏱️ Next Patient</span>
+                                <span style="font-weight: 600;">John Smith (5 mins)</span>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Starting next consultation...', 'success')" style="margin-top: 16px; padding: 10px 30px; border: none; border-radius: 8px; background: var(--accent); color: var(--gray-900); font-weight: 600; cursor: pointer; transition: var(--transition); font-size: 14px;">
+                            <i class="fas fa-play"></i> Start Next Consultation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/doc_dashboard.js">
+        
+    </script>
+</body>
+</html>

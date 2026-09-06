@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Hospital System - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div class="auth-container dashboard" id="dashboard-app">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-user">
+                <div class="avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <h3 id="userName">User</h3>
+                    <p id="userEmail">user@example.com</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn btn-danger" style="width: auto; padding: 8px 20px;">
+                Logout
+            </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-icon">👨‍⚕️</div>
+                <div class="card-number" id="statPatients">0</div>
+                <div class="card-label">Total Patients</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon">🏥</div>
+                <div class="card-number" id="statHospitals">0</div>
+                <div class="card-label">Hospitals</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon">💊</div>
+                <div class="card-number" id="statMedicines">0</div>
+                <div class="card-label">Medicines Available</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon">📋</div>
+                <div class="card-number" id="statAppointments">0</div>
+                <div class="card-label">Today's Appointments</div>
+            </div>
+        </div>
+
+        <!-- Placeholder for main content -->
+        <div style="text-align: center; padding: 40px 20px; background: var(--gray-50); border-radius: var(--radius);">
+            <p style="color: var(--gray-500); font-size: 16px;">
+                🚀 Dashboard content coming soon!<br />
+                <span style="font-size: 14px;">Your authentication is working perfectly.</span>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/patient_dashboard.css" />
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>system</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <!-- Dashboard -->
+            <a href="patient_dashboard.html" data-page="dashboard" class="active">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <!-- Appointments Dropdown -->
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">4</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="patient_myappointment.html" data-page="appointments">
+                        <i class="fas fa-list"></i> My Appointments
+                        <span class="badge">4</span>
+                    </a>
+                    <a href="patient_new_appointment.html" data-page="book-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <!-- Medical Records -->
+            <a href="#" data-page="medical-records">
+                <i class="fas fa-file-medical-alt"></i> Medical Records
+            </a>
+
+            <!-- Prescriptions -->
+            <a href="patient_prescription.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+            </a>
+
+            <!-- Health Analytics -->
+            <a href="#" data-page="health-analytics">
+                <i class="fas fa-chart-line"></i> Health Analytics
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <!-- Profile -->
+            <a href="#" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <!-- Notifications -->
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">3</span>
+            </a>
+
+            <!-- Privacy & Security -->
+            <a href="#" data-page="security">
+                <i class="fas fa-shield-alt"></i> Privacy & Security
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SC</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName"> Carpenter</div>
+                    <div class="role">Patient</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Dashboard
+                    <small>Welcome back!</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">SC</div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue"><i class="fas fa-calendar-check"></i></div>
+                <div class="info">
+                    <div class="number">4</div>
+                    <div class="label">Upcoming Appointments</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green"><i class="fas fa-prescription-bottle-alt"></i></div>
+                <div class="info">
+                    <div class="number">2</div>
+                    <div class="label">Active Prescriptions</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon yellow"><i class="fas fa-clock"></i></div>
+                <div class="info">
+                    <div class="number">15</div>
+                    <div class="label">Wait Time (mins)</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon red"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="info">
+                    <div class="number">$0.00</div>
+                    <div class="label">Outstanding Bills</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Main Column -->
+            <div class="main-col">
+                <!-- Patient Profile -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-circle" style="color: var(--primary-lighter); margin-right: 8px;"></i>Patient Information</h3>
+                        <button class="card-action">Edit Profile</button>
+                    </div>
+                    <div class="patient-profile">
+                        <div class="avatar-large" id="profileAvatar">SC</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Full Name</span>
+                                <span class="value" id="patientName">Sabrina Carpenter</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Gender</span>
+                                <span class="value" id="patientGender">Female</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Date of Birth</span>
+                                <span class="value" id="patientDob">20 Dec 1985</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Age</span>
+                                <span class="value" id="patientAge">39 y.o</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Email</span>
+                                <span class="value" id="patientEmail">sabrina@email.com</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Phone</span>
+                                <span class="value" id="patientPhone">+1 234 567 890</span>
+                            </div>
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <span class="label">Address</span>
+                                <span class="value" id="patientAddress">123 Maple St, Los Angeles, CA 90001</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-notes-medical" style="color: var(--primary-lighter); margin-right: 8px;"></i>Medical History</h3>
+                        <button class="card-action">View All</button>
+                    </div>
+                    <div class="medical-history-grid" id="medicalHistoryContainer">
+                        <div class="medical-history-item">
+                            <div class="icon"><i class="fas fa-heart"></i></div>
+                            <div class="info">
+                                <div class="name">Hypertension</div>
+                                <div class="desc">High blood pressure requiring monitoring</div>
+                            </div>
+                            <span class="status">Ongoing</span>
+                        </div>
+                        <div class="medical-history-item">
+                            <div class="icon"><i class="fas fa-lungs"></i></div>
+                            <div class="info">
+                                <div class="name">Asthma</div>
+                                <div class="desc">Airway inflammation and narrowing</div>
+                            </div>
+                            <span class="status">Managed</span>
+                        </div>
+                        <div class="medical-history-item">
+                            <div class="icon"><i class="fas fa-kidney"></i></div>
+                            <div class="info">
+                                <div class="name">Chronic Kidney Disease</div>
+                                <div class="desc">Gradual loss of kidney function</div>
+                            </div>
+                            <span class="status">Monitoring</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Appointments -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt" style="color: var(--primary-lighter); margin-right: 8px;"></i>Recent Appointments</h3>
+                        <a href="appointments.html" class="card-action">View All →</a>
+                    </div>
+                    <div id="recentAppointments">
+                        <div class="appointment-item">
+                            <div class="left">
+                                <div class="icon"><i class="fas fa-pills"></i></div>
+                                <div class="info">
+                                    <div class="title">Diuretics</div>
+                                    <div class="sub">Dr. Septiannisa</div>
+                                </div>
+                            </div>
+                            <div class="date">
+                                <span class="day">Oct 22</span>
+                                <span class="month">2026</span>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="left">
+                                <div class="icon"><i class="fas fa-heart"></i></div>
+                                <div class="info">
+                                    <div class="title">Beta-Blockers</div>
+                                    <div class="sub">Dr. Septiannisa</div>
+                                </div>
+                            </div>
+                            <div class="date">
+                                <span class="day">Dec 14</span>
+                                <span class="month">2026</span>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="left">
+                                <div class="icon"><i class="fas fa-syringe"></i></div>
+                                <div class="info">
+                                    <div class="title">ACE Inhibitors</div>
+                                    <div class="sub">Dr. Septiannisa</div>
+                                </div>
+                            </div>
+                            <div class="date">
+                                <span class="day">Dec 24</span>
+                                <span class="month">2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Column -->
+            <div class="side-col">
+                <!-- Heart Rate Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-heartbeat" style="color: var(--danger); margin-right: 8px;"></i>Heart Rate</h3>
+                        <button class="card-action">Details</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="heartRateChart"></canvas>
+                    </div>
+                    <div class="chart-stats">
+                        <div class="stat">
+                            <span class="label">Average</span>
+                            <span class="value" id="avgHeartRate">78 bpm</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Min</span>
+                            <span class="value" id="minHeartRate">41 bpm</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Max</span>
+                            <span class="value" id="maxHeartRate">90 bpm</span>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <span><span class="dot" style="background: #3b82f6;"></span>This week</span>
+                        <span><span class="dot" style="background: #22c55e;"></span>Last week</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt" style="color: var(--accent); margin-right: 8px;"></i>Quick Actions</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="book-appointment.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-calendar-plus" style="color: var(--primary-lighter);"></i>
+                            <span>Book New Appointment</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                        <a href="prescriptions.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-prescription-bottle-alt" style="color: var(--success);"></i>
+                            <span>View Prescriptions</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; text-decoration: none; color: var(--gray-800); transition: var(--transition);">
+                            <i class="fas fa-file-invoice" style="color: var(--warning);"></i>
+                            <span>Pay Bills</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: var(--gray-400);"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="patient_dashboard.js"></script>
+</body>
+</html>

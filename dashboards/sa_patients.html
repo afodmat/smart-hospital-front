@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Patients - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+    <!-- SIDEBAR (same) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="admin-dashboard.html" data-page="admin-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="admin-doctors.html" data-page="admin-doctors"><i class="fas fa-user-md"></i> Doctors <span class="badge">8</span></a>
+            <a href="admin-patients.html" data-page="admin-patients" class="active"><i class="fas fa-users"></i> Patients <span class="badge">24</span></a>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="admin-departments.html" data-page="admin-departments"><i class="fas fa-building"></i> Departments <span class="badge">5</span></a>
+            <a href="admin-reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="admin-settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info"><div class="name" id="sidebarName">Super Admin</div><div class="role">System Administrator</div></div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>Manage Patients <small>24 patients registered</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search patients..." id="searchInput" /></div>
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <div class="admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div class="admin-stat-card"><div class="icon blue"><i class="fas fa-users"></i></div><div class="info"><div class="number">24</div><div class="label">Total Patients</div></div></div>
+            <div class="admin-stat-card"><div class="icon green"><i class="fas fa-check-circle"></i></div><div class="info"><div class="number">18</div><div class="label">Active</div></div></div>
+            <div class="admin-stat-card"><div class="icon yellow"><i class="fas fa-hourglass-half"></i></div><div class="info"><div class="number">4</div><div class="label">Pending</div></div></div>
+            <div class="admin-stat-card"><div class="icon red"><i class="fas fa-times-circle"></i></div><div class="info"><div class="number">2</div><div class="label">Inactive</div></div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-list" style="color: var(--primary-lighter);"></i> All Patients</h3><button onclick="showToast('Opening add patient form...', 'info')" class="card-action"><i class="fas fa-user-plus"></i> Add Patient</button></div>
+            <div style="overflow-x: auto;">
+                <table class="patient-table">
+                    <thead><tr><th>Patient</th><th>ID</th><th>Email</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>John Smith</strong></td><td>#P-0042</td><td>john@email.com</td><td>+1 234 567 890</td><td><span class="status-dot active"></span> Active</td><td><div class="actions"><button class="btn-view" onclick="showToast('Viewing John Smith...', 'info')">View</button><button class="btn-edit" onclick="showToast('Editing John Smith...', 'info')">Edit</button><button class="btn-delete" onclick="showToast('Delete John Smith?', 'error')">Delete</button></div></td></tr>
+                        <tr><td><strong>Sarah Johnson</strong></td><td>#P-0087</td><td>sarah@email.com</td><td>+1 234 567 891</td><td><span class="status-dot active"></span> Active</td><td><div class="actions"><button class="btn-view" onclick="showToast('Viewing Sarah Johnson...', 'info')">View</button><button class="btn-edit" onclick="showToast('Editing Sarah Johnson...', 'info')">Edit</button><button class="btn-delete" onclick="showToast('Delete Sarah Johnson?', 'error')">Delete</button></div></td></tr>
+                        <tr><td><strong>Michael Chen</strong></td><td>#P-0156</td><td>michael@email.com</td><td>+1 234 567 892</td><td><span class="status-dot pending"></span> Pending</td><td><div class="actions"><button class="btn-view" onclick="showToast('Viewing Michael Chen...', 'info')">View</button><button class="btn-edit" onclick="showToast('Editing Michael Chen...', 'info')">Edit</button><button class="btn-delete" onclick="showToast('Delete Michael Chen?', 'error')">Delete</button></div></td></tr>
+                        <tr><td><strong>Emily Davis</strong></td><td>#P-0234</td><td>emily@email.com</td><td>+1 234 567 893</td><td><span class="status-dot active"></span> Active</td><td><div class="actions"><button class="btn-view" onclick="showToast('Viewing Emily Davis...', 'info')">View</button><button class="btn-edit" onclick="showToast('Editing Emily Davis...', 'info')">Edit</button><button class="btn-delete" onclick="showToast('Delete Emily Davis?', 'error')">Delete</button></div></td></tr>
+                        <tr><td><strong>Robert Wilson</strong></td><td>#P-0312</td><td>robert@email.com</td><td>+1 234 567 894</td><td><span class="status-dot inactive"></span> Inactive</td><td><div class="actions"><button class="btn-view" onclick="showToast('Viewing Robert Wilson...', 'info')">View</button><button class="btn-edit" onclick="showToast('Editing Robert Wilson...', 'info')">Edit</button><button class="btn-delete" onclick="showToast('Delete Robert Wilson?', 'error')">Delete</button></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/main.js"></script>
+</body>
+</html>

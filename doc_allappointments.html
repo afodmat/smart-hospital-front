@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Appointments - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments" class="active">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    All Appointments
+                    <small>Complete history</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search appointments..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All <span class="count">6</span></button>
+            <button class="filter-tab" data-filter="scheduled">Scheduled <span class="count">3</span></button>
+            <button class="filter-tab" data-filter="completed">Completed <span class="count">2</span></button>
+            <button class="filter-tab" data-filter="cancelled">Cancelled <span class="count">1</span></button>
+        </div>
+
+        <!-- Appointments List -->
+        <div class="appointment-card scheduled">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">John Smith</div>
+                    <div class="sub">Follow-up · Critical · Oct 22, 2026 09:00 AM</div>
+                </div>
+            </div>
+            <span class="status-badge scheduled">Scheduled</span>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="showToast('Starting consultation with John Smith', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
+            </div>
+        </div>
+
+        <div class="appointment-card scheduled">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">Sarah Johnson</div>
+                    <div class="sub">Initial Consultation · High · Oct 22, 2026 10:30 AM</div>
+                </div>
+            </div>
+            <span class="status-badge scheduled">Scheduled</span>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="showToast('Starting consultation with Sarah Johnson', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
+            </div>
+        </div>
+
+        <div class="appointment-card scheduled">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">Emily Davis</div>
+                    <div class="sub">Routine Checkup · Medium · Oct 22, 2026 02:00 PM</div>
+                </div>
+            </div>
+            <span class="status-badge scheduled">Scheduled</span>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="showToast('Starting consultation with Emily Davis', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
+            </div>
+        </div>
+
+        <div class="appointment-card completed">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">James Wilson</div>
+                    <div class="sub">Routine Checkup · Low · Oct 22, 2026 08:00 AM</div>
+                </div>
+            </div>
+            <span class="status-badge completed">Completed</span>
+        </div>
+
+        <div class="appointment-card completed">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">Michael Chen</div>
+                    <div class="sub">Follow-up · High · Oct 22, 2026 12:00 PM</div>
+                </div>
+            </div>
+            <span class="status-badge completed">Completed</span>
+        </div>
+
+        <div class="appointment-card cancelled">
+            <div class="left">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <div class="info">
+                    <div class="title">Robert Wilson</div>
+                    <div class="sub">Medication Refill · Low · Oct 22, 2026 03:30 PM</div>
+                </div>
+            </div>
+            <span class="status-badge cancelled">Cancelled</span>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/doc_dashboard.js"></script>
+    <script>
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                const cards = document.querySelectorAll('.appointment-card');
+
+                cards.forEach(card => {
+                    if (filter === 'all' || card.classList.contains(filter)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

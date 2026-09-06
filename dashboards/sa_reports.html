@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports & Analytics - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+    <!-- SIDEBAR (same) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="admin-dashboard.html" data-page="admin-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="admin-doctors.html" data-page="admin-doctors"><i class="fas fa-user-md"></i> Doctors <span class="badge">8</span></a>
+            <a href="admin-patients.html" data-page="admin-patients"><i class="fas fa-users"></i> Patients <span class="badge">24</span></a>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="admin-departments.html" data-page="admin-departments"><i class="fas fa-building"></i> Departments <span class="badge">5</span></a>
+            <a href="admin-reports.html" data-page="admin-reports" class="active"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="admin-settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info"><div class="name" id="sidebarName">Super Admin</div><div class="role">System Administrator</div></div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>Reports & Analytics <small>Hospital performance insights</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <div class="report-metric">
+            <div class="item"><div class="number">24</div><div class="label">Total Patients</div><span class="change up">↑ 12%</span></div>
+            <div class="item"><div class="number">8</div><div class="label">Total Doctors</div><span class="change up">↑ 25%</span></div>
+            <div class="item"><div class="number">18</div><div class="label">Today's Appointments</div><span class="change up">↑ 8%</span></div>
+            <div class="item"><div class="number">$12,450</div><div class="label">Revenue (Monthly)</div><span class="change up">↑ 15%</span></div>
+        </div>
+
+        <div class="report-grid">
+            <div class="report-card">
+                <div class="card-header"><h3><i class="fas fa-users" style="color: var(--primary-lighter);"></i> Patient Growth</h3><button class="card-action" onclick="showToast('Exporting report...', 'info')">Export</button></div>
+                <div class="report-chart-container"><canvas id="patientGrowthChart"></canvas></div>
+            </div>
+            <div class="report-card">
+                <div class="card-header"><h3><i class="fas fa-calendar-check" style="color: var(--primary-lighter);"></i> Appointment Volume</h3><button class="card-action" onclick="showToast('Exporting report...', 'info')">Export</button></div>
+                <div class="report-chart-container"><canvas id="appointmentVolumeChart"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div><h3 style="font-size: 16px;"><i class="fas fa-file-export" style="color: var(--primary-lighter);"></i> Export Reports</h3><p style="font-size: 14px; color: var(--gray-500);">Download reports in various formats</p></div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="showToast('Exporting PDF...', 'info')" style="padding: 8px 20px; border: 2px solid var(--gray-200); border-radius: 6px; background: white; cursor: pointer; font-weight: 500;"><i class="fas fa-file-pdf" style="color: var(--danger);"></i> PDF</button>
+                <button onclick="showToast('Exporting CSV...', 'info')" style="padding: 8px 20px; border: 2px solid var(--gray-200); border-radius: 6px; background: white; cursor: pointer; font-weight: 500;"><i class="fas fa-file-csv" style="color: var(--success);"></i> CSV</button>
+                <button onclick="showToast('Exporting Excel...', 'info')" style="padding: 8px 20px; border: 2px solid var(--gray-200); border-radius: 6px; background: white; cursor: pointer; font-weight: 500;"><i class="fas fa-file-excel" style="color: #217346;"></i> Excel</button>
+                <button onclick="showToast('Opening print dialog...', 'info')" style="padding: 8px 20px; border: 2px solid var(--gray-200); border-radius: 6px; background: white; cursor: pointer; font-weight: 500;"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/main.js"></script>
+    <script>
+        new Chart(document.getElementById('patientGrowthChart').getContext('2d'), {
+            type: 'line',
+            data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], datasets: [{ label: 'Patients', data: [10, 12, 14, 16, 19, 22, 24], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.05)', fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', cornerRadius: 8, padding: 12 } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } } } }
+        });
+        new Chart(document.getElementById('appointmentVolumeChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Appointments', data: [12, 18, 15, 22, 20, 8, 5], backgroundColor: '#3b82f6', borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', cornerRadius: 8, padding: 12 } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } } } }
+        });
+    </script>
+</body>
+</html>

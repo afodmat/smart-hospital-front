@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prescriptions - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/patient_dashboard.css" />
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>system</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">4</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="appointments.html" data-page="appointments">
+                        <i class="fas fa-list"></i> My Appointments
+                        <span class="badge">4</span>
+                    </a>
+                    <a href="book-appointment.html" data-page="book-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="#" data-page="medical-records">
+                <i class="fas fa-file-medical-alt"></i> Medical Records
+            </a>
+
+            <a href="prescriptions.html" data-page="prescriptions" class="active">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+            </a>
+
+            <a href="#" data-page="health-analytics">
+                <i class="fas fa-chart-line"></i> Health Analytics
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="patient_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">3</span>
+            </a>
+
+            <a href="#" data-page="security">
+                <i class="fas fa-shield-alt"></i> Privacy & Security
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SC</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Sabrina Carpenter</div>
+                    <div class="role">Patient</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Prescriptions
+                    <small>Manage your medications</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search prescriptions..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">SC</div>
+            </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-filter="all">
+                All <span class="count" id="countAll">5</span>
+            </button>
+            <button class="filter-tab" data-filter="active">
+                Active <span class="count" id="countActive">2</span>
+            </button>
+            <button class="filter-tab" data-filter="completed">
+                Completed <span class="count" id="countCompleted">2</span>
+            </button>
+            <button class="filter-tab" data-filter="expired">
+                Expired <span class="count" id="countExpired">1</span>
+            </button>
+        </div>
+
+        <!-- Prescriptions Container -->
+        <div class="prescriptions-container" id="prescriptionsContainer">
+            <!-- Active Prescription -->
+            <div class="prescription-card active">
+                <div class="header">
+                    <div class="left">
+                        <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <div class="info">
+                            <div class="name">Lisinopril</div>
+                            <div class="meta">
+                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
+                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Oct 22, 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="detail">
+                        <div class="label">Dosage</div>
+                        <div class="value"><span class="dosage">10mg</span> once daily</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Quantity</div>
+                        <div class="value">30 tablets</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Instructions</div>
+                        <div class="value">Take with water, preferably in the morning</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Refills</div>
+                        <div class="value">3 refills remaining</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="refills">💊 <span>3</span> refills remaining</div>
+                    <div class="actions">
+                        <button class="btn-refill">Request Refill</button>
+                        <button class="btn-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Prescription -->
+            <div class="prescription-card active">
+                <div class="header">
+                    <div class="left">
+                        <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <div class="info">
+                            <div class="name">Albuterol Inhaler</div>
+                            <div class="meta">
+                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
+                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Nov 5, 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="detail">
+                        <div class="label">Dosage</div>
+                        <div class="value"><span class="dosage">90mcg</span> 2 puffs as needed</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Quantity</div>
+                        <div class="value">1 inhaler (200 puffs)</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Instructions</div>
+                        <div class="value">Use as needed for shortness of breath</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Refills</div>
+                        <div class="value">2 refills remaining</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="refills">💊 <span>2</span> refills remaining</div>
+                    <div class="actions">
+                        <button class="btn-refill">Request Refill</button>
+                        <button class="btn-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Prescription -->
+            <div class="prescription-card completed">
+                <div class="header">
+                    <div class="left">
+                        <div class="icon completed"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <div class="info">
+                            <div class="name">Metformin</div>
+                            <div class="meta">
+                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
+                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Aug 15, 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="detail">
+                        <div class="label">Dosage</div>
+                        <div class="value"><span class="dosage">500mg</span> twice daily</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Quantity</div>
+                        <div class="value">60 tablets</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Instructions</div>
+                        <div class="value">Take with meals</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Refills</div>
+                        <div class="value">0 refills remaining</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="refills">✅ Completed on Nov 1, 2026</div>
+                    <div class="actions">
+                        <button class="btn-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Prescription -->
+            <div class="prescription-card completed">
+                <div class="header">
+                    <div class="left">
+                        <div class="icon completed"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <div class="info">
+                            <div class="name">Amoxicillin</div>
+                            <div class="meta">
+                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
+                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Sep 10, 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="detail">
+                        <div class="label">Dosage</div>
+                        <div class="value"><span class="dosage">500mg</span> 3 times daily</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Quantity</div>
+                        <div class="value">21 capsules</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Instructions</div>
+                        <div class="value">Take with food, complete full course</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Refills</div>
+                        <div class="value">0 refills remaining</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="refills">✅ Completed on Sep 25, 2026</div>
+                    <div class="actions">
+                        <button class="btn-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expired Prescription -->
+            <div class="prescription-card expired">
+                <div class="header">
+                    <div class="left">
+                        <div class="icon expired"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <div class="info">
+                            <div class="name">Warfarin</div>
+                            <div class="meta">
+                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
+                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Jan 5, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge expired">Expired</span>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="detail">
+                        <div class="label">Dosage</div>
+                        <div class="value"><span class="dosage">5mg</span> once daily</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Quantity</div>
+                        <div class="value">30 tablets</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Instructions</div>
+                        <div class="value">Take in the evening with food</div>
+                    </div>
+                    <div class="detail">
+                        <div class="label">Refills</div>
+                        <div class="value">0 refills remaining</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="refills">⛔ Expired on Jul 5, 2025</div>
+                    <div class="actions">
+                        <button class="btn-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-prescription-bottle-alt"></i>
+            <h3>No Prescriptions Found</h3>
+            <p>You don't have any prescriptions in this category.</p>
+            <a href="book-appointment.html" style="display: inline-block; margin-top: 16px; background: var(--primary-light); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none;">
+                Book an Appointment
+            </a>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/patient_dashboard.js"></script>
+
+    
+    <script>
+        
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                const cards = document.querySelectorAll('.prescription-card');
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    if (filter === 'all' || card.classList.contains(filter)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                const emptyState = document.getElementById('emptyState');
+                if (visibleCount === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                }
+            });
+        });
+
+        // ========================================
+        // REFILL BUTTON
+        // ========================================
+        document.querySelectorAll('.btn-refill').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const card = this.closest('.prescription-card');
+                const name = card.querySelector('.name')?.textContent || 'medication';
+
+                // Show loading state
+                this.textContent = 'Requesting...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    showToast(`✅ Refill requested for ${name}!`, 'success');
+                    this.textContent = 'Request Refill';
+                    this.disabled = false;
+                }, 1500);
+            });
+        });
+
+        
+        document.querySelectorAll('.btn-details').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const card = this.closest('.prescription-card');
+                const name = card.querySelector('.name')?.textContent || 'Prescription';
+                showToast(`📋 Details for ${name}`, 'info');
+            });
+        });
+    </script>
+</body>
+</html>

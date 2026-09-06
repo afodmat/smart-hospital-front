@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Doctor - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/sadashboard.css" />
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="sa_dashboard.html" data-page="admin-dashboard" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="sa_patients.html" data-page="admin-patients"><i class="fas fa-user-md"></i> Patients <span class="badge">8</span></a>
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="doctorsToggle">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Doctors</span>
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="doctorsMenu">
+                    <a href="sa_doctors.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Doctors
+                        <span class="badge" id="alldoctorsBadge">0</span>
+                    </a>
+                    <a href="sa_add_doctor.html" data-page="new-doctor">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+            <button class="dropdown-toggle" id="adminToggle">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+                <span class="badge" id="adminBadge">0</span>
+                <span class="arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu" id="adminMenu">
+                <a href="sa_admins.html" data-page="all-admins">
+                    <i class="fas fa-users-cog"></i> All Admins
+                    <span class="badge" id="allAdminBadge">0</span>
+                </a>
+
+                <a href="sa_add_admin.html" data-page="new-admin">
+                    <i class="fas fa-plus-circle"></i> Add New Admin
+                </a>
+            </div>
+        </div>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="sa_reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="sa_settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Super Admin</div>
+                    <div class="role">System Administrator</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================
+    MAIN CONTENT
+    ======================================== -->
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>Add New Doctor <small>Register a new doctor to the system</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <div class="form-card">
+                <!-- Success/Error Message -->
+                <div id="formMessage" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;"></div>
+
+                <form id="addDoctorForm">
+                    <!-- ========================================
+                    PERSONAL INFORMATION
+                    ======================================== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" id="firstName" placeholder="Enter first name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" id="lastName" placeholder="Enter last name" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Other Names</label>
+                            <input type="text" id="otherNames" placeholder="Enter middle names (optional)" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email <span class="required">*</span></label>
+                                <input type="email" id="email" placeholder="doctor@hospital.com" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phoneNumber" placeholder="+1 234 567 890" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password <span class="required">*</span></label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" placeholder="Min 8 characters" required />
+                                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-hint">Password must be at least 8 characters</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password <span class="required">*</span></label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirmPassword" placeholder="Re-enter password" required />
+                                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                    PROFESSIONAL INFORMATION
+                    ======================================== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-stethoscope"></i> Professional Information
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Specialty <span class="required">*</span></label>
+                                <select id="specialty" required>
+                                    <option value="">Select specialty...</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Ophthalmology">Ophthalmology</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                    <option value="Urology">Urology</option>
+                                    <option value="Gastroenterology">Gastroenterology</option>
+                                    <option value="Pulmonology">Pulmonology</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Surgery">Surgery</option>
+                                    <option value="General Medicine">General Medicine</option>
+                                    <option value="Family Medicine">Family Medicine</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Years of Experience</label>
+                                <input type="number" id="yearsOfExperience" placeholder="e.g., 5" min="0" max="50" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" id="dateOfBirth" />
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="gender">
+                                    <option value="">Select gender...</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bio / Short Description</label>
+                            <textarea id="bio" placeholder="Enter a brief bio or description of the doctor..." rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                    FORM ACTIONS
+                    ======================================== -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save" id="submitBtn">
+                            <i class="fas fa-user-md"></i> Register Doctor
+                        </button>
+                        <button type="reset" class="btn-cancel" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Clear Form
+                        </button>
+                        <a href="sa_doctors.html" class="btn-back">
+                            <i class="fas fa-arrow-left"></i> Back to Doctors
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/sa_dashboard.js"></script>
+    <script>
+        // ========================================
+        // TOGGLE PASSWORD VISIBILITY
+        // ========================================
+
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const icon = input.parentElement.querySelector('.toggle-password i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ========================================
+        // RESET FORM
+        // ========================================
+
+        function resetForm() {
+            document.getElementById('addDoctorForm').reset();
+            document.getElementById('formMessage').style.display = 'none';
+            // Reset password visibility
+            document.querySelectorAll('.password-wrapper input').forEach(input => {
+                input.type = 'password';
+                const icon = input.parentElement.querySelector('.toggle-password i');
+                if (icon) icon.className = 'fas fa-eye';
+            });
+        }
+
+        // ========================================
+        // SHOW FORM MESSAGE
+        // ========================================
+
+        function showFormMessage(message, type = 'success') {
+            const container = document.getElementById('formMessage');
+            container.style.display = 'block';
+            container.textContent = message;
+            container.className = type === 'success' ? 'form-message success' : 'form-message error';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+
+        // ========================================
+        // SUBMIT FORM
+        // ========================================
+
+        document.getElementById('addDoctorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const otherNames = document.getElementById('otherNames').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const specialty = document.getElementById('specialty').value;
+            const yearsOfExperience = document.getElementById('yearsOfExperience').value;
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const gender = document.getElementById('gender').value;
+            const bio = document.getElementById('bio').value.trim();
+
+            // ========================================
+            // VALIDATION
+            // ========================================
+
+            // Required fields
+            if (!firstName || !lastName || !email || !password || !specialty) {
+                showFormMessage('Please fill in all required fields (*)', 'error');
+                return;
+            }
+
+            // Email validation
+            if (!validateEmail(email)) {
+                showFormMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Password validation
+            if (password.length < 8) {
+                showFormMessage('Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            // Password match
+            if (password !== confirmPassword) {
+                showFormMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            // Phone number validation (optional)
+            if (phoneNumber && !validatePhone(phoneNumber)) {
+                showFormMessage('Please enter a valid phone number (e.g., +1 234 567 890)', 'error');
+                return;
+            }
+
+            // ========================================
+            // PREPARE DATA
+            // ========================================
+
+            const doctorData = {
+                firstName,
+                lastName,
+                otherNames: otherNames || null,
+                email,
+                password,
+                phoneNumber: phoneNumber || null,
+                specialty,
+                yearsOfExperience: yearsOfExperience ? parseInt(yearsOfExperience) : null,
+                dateOfBirth: dateOfBirth || null,
+                gender: gender || null,
+                bio: bio || null,
+            };
+
+            console.log('📤 Sending doctor data:', doctorData);
+
+            // ========================================
+            // SUBMIT TO API
+            // ========================================
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+            try {
+                const result = await apiRequest('/doctors', 'POST', doctorData);
+                
+                console.log('📦 API Response:', result);
+
+                if (result.success) {
+                    showFormMessage(`✅ ${result.message || 'Doctor registered successfully. Check the email address for verification.'}`, 'success');
+                    showToast('Doctor created. Verification email sent.', 'success');
+                    
+                    // Redirect to doctors list after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'sa_doctors.html';
+                    }, 2000);
+                } else {
+                    showFormMessage('❌ Failed to register doctor: ' + (result.message || 'Unknown error'), 'error');
+                    showToast('Failed to register doctor', 'error');
+                }
+
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                showFormMessage('❌ Error: ' + error.message, 'error');
+                showToast('Failed to register doctor: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-md"></i> Register Doctor';
+            }
+        });
+
+        // ========================================
+        // VALIDATION HELPERS
+        // ========================================
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePhone(phone) {
+            return /^\+?[\d\s-()]{10,15}$/.test(phone);
+        }
+
+        // ========================================
+        // REAL-TIME VALIDATION
+        // ========================================
+
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const hint = this.parentElement.nextElementSibling;
+            
+            if (password.length === 0) {
+                hint.textContent = 'Password must be at least 8 characters';
+                hint.style.color = 'var(--gray-500)';
+            } else if (password.length < 8) {
+                hint.textContent = `Password must be at least 8 characters (${password.length}/8)`;
+                hint.style.color = 'var(--danger)';
+            } else {
+                hint.textContent = '✅ Password strength: Good';
+                hint.style.color = 'var(--success)';
+            }
+        });
+
+        // Confirm password validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirm = this.value;
+            
+            if (confirm.length > 0 && password !== confirm) {
+                this.style.borderColor = 'var(--danger)';
+            } else {
+                this.style.borderColor = '';
+            }
+        });
+
+        // ========================================
+        // LOAD USER DATA
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserData();
+        });
+    </script>
+
+    <!-- ========================================
+    ADDITIONAL STYLES
+    ======================================== -->
+    <style>
+        /* ========================================
+           FORM CONTAINER
+           ======================================== */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        /* ========================================
+           FORM SECTIONS
+           ======================================== */
+        .form-section {
+            margin-bottom: 28px;
+        }
+
+        .form-section .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section .section-title i {
+            color: var(--primary-lighter);
+        }
+
+        /* ========================================
+           FORM ROW & GROUPS
+           ======================================== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--gray-900);
+            transition: var(--transition);
+            background: var(--gray-50);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(44, 110, 156, 0.1);
+            background: white;
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: var(--danger);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group .password-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* ========================================
+           PASSWORD TOGGLE
+           ======================================== */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 44px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--gray-600);
+        }
+
+        /* ========================================
+           FORM MESSAGE
+           ======================================== */
+        .form-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .form-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* ========================================
+           FORM ACTIONS
+           ======================================== */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-save {
+            padding: 12px 32px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            padding: 12px 32px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-back {
+            padding: 12px 32px;
+            background: transparent;
+            color: var(--primary-light);
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn-save,
+            .form-actions .btn-cancel,
+            .form-actions .btn-back {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</body>
+</html>

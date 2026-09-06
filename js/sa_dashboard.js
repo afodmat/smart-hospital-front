@@ -6,12 +6,13 @@
 // API REQUEST - FIXED
 // ========================================
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'https://smart-hospital-fet1.onrender.com';
+
+let allDoctors = [];
 
 async function apiRequest(endpoint, method = 'GET', data = null) {
     const url = `${API_BASE_URL}${endpoint}`;
 
-    const token = localStorage.getItem('access_token');
 
     const options = {
         method,
@@ -94,9 +95,6 @@ async function checkAuth() {
     } catch (error) {
         console.error('❌ /auth/me FAILED:', error);
 
-        // TEMPORARILY COMMENT THIS OUT
-        // window.location.href = 'login.html';
-
         return false;
     }
 }
@@ -110,8 +108,11 @@ const toggleBtn = document.getElementById('toggleSidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 const logoutBtn = document.getElementById('logoutBtn');
 
-const appointmentsToggle = document.getElementById('appointmentsToggle');
-const appointmentsMenu = document.getElementById('appointmentsMenu');
+const doctorsToggle = document.getElementById('doctorsToggle'); 
+const doctorsMenu = document.getElementById('doctorsMenu');
+
+const adminToggle = document.getElementById('adminToggle');
+const adminMenu = document.getElementById('adminMenu');
 
 // ========================================
 // SIDEBAR TOGGLE
@@ -154,27 +155,93 @@ window.addEventListener('resize', () => {
 });
 
 // ========================================
-// SIDEBAR DROPDOWN
+// SIDEBAR DROPDOWN - DOCTORS
 // ========================================
+
 let isDropdownOpen = false;
 
-if (appointmentsToggle && appointmentsMenu) {
-    appointmentsToggle.addEventListener('click', () => {
+if (doctorsToggle && doctorsMenu) {
+
+    doctorsToggle.addEventListener('click', () => {
+
         isDropdownOpen = !isDropdownOpen;
-        appointmentsMenu.classList.toggle('open');
-        const arrow = appointmentsToggle.querySelector('.arrow');
-        if (arrow) arrow.classList.toggle('open');
+
+        doctorsMenu.classList.toggle('open');
+
+        const arrow = doctorsToggle.querySelector('.arrow');
+
+        if (arrow) {
+            arrow.classList.toggle('open');
+        }
+
+    });
+
+
+    document.addEventListener('click', (e) => {
+
+        const dropdown = doctorsToggle.closest('.dropdown');
+
+        if (dropdown && !dropdown.contains(e.target)) {
+
+            doctorsMenu.classList.remove('open');
+
+            const arrow =
+                doctorsToggle.querySelector('.arrow');
+
+            if (arrow) {
+                arrow.classList.remove('open');
+            }
+
+            isDropdownOpen = false;
+
+        }
+
+    });
+
+}
+
+// ========================================
+// SIDEBAR DROPDOWN - ADMIN
+// ========================================
+
+let isAdminDropdownOpen = false;
+
+if (adminToggle && adminMenu) {
+
+    adminToggle.addEventListener('click', () => {
+
+        isAdminDropdownOpen = !isAdminDropdownOpen;
+
+        adminMenu.classList.toggle('open');
+
+        const arrow = adminToggle.querySelector('.arrow');
+
+        if (arrow) {
+            arrow.classList.toggle('open');
+        }
+
     });
 
     document.addEventListener('click', (e) => {
-        const dropdown = document.querySelector('.dropdown');
+
+        const dropdown = adminToggle.closest('.dropdown');
+
         if (dropdown && !dropdown.contains(e.target)) {
-            appointmentsMenu.classList.remove('open');
-            const arrow = appointmentsToggle.querySelector('.arrow');
-            if (arrow) arrow.classList.remove('open');
-            isDropdownOpen = false;
+
+            adminMenu.classList.remove('open');
+
+            const arrow = adminToggle.querySelector('.arrow');
+
+            if (arrow) {
+                arrow.classList.remove('open');
+            }
+
+            isAdminDropdownOpen = false;
+
         }
+
     });
+
 }
 
 // ========================================
@@ -308,12 +375,58 @@ function initStatusToggle() {
 // SEARCH FUNCTIONALITY
 // ========================================
 function initSearch() {
+
     const searchInput = document.getElementById('searchInput');
+
     if (!searchInput) return;
 
     searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase();
-        console.log('Searching for:', query);
+
+        const query = e.target.value
+            .trim()
+            .toLowerCase();
+
+        // If search is empty, show everyone
+        if (!query) {
+            renderDoctors(allDoctors);
+            return;
+        }
+
+        const filteredDoctors = allDoctors.filter(doctor => {
+
+            const firstName =
+                doctor.user?.firstName?.toLowerCase() || '';
+
+            const lastName =
+                doctor.user?.lastName?.toLowerCase() || '';
+
+            const otherNames =
+                doctor.user?.otherNames?.toLowerCase() || '';
+
+            const email =
+                doctor.user?.email?.toLowerCase() || '';
+
+            const phone =
+                doctor.phoneNumber?.toLowerCase() || '';
+
+            const specialty =
+                doctor.specialty?.toLowerCase() || '';
+
+            const doctorId =
+                String(doctor.id).toLowerCase();
+
+            return (
+                firstName.includes(query) ||
+                lastName.includes(query) ||
+                otherNames.includes(query) ||
+                email.includes(query) ||
+                phone.includes(query) ||
+                specialty.includes(query) ||
+                doctorId.includes(query)
+            );
+        });
+
+        renderDoctors(filteredDoctors);
     });
 }
 
@@ -340,8 +453,8 @@ async function fetchPatients() {
 
         if (loadingState) loadingState.style.display = 'none';
 
-        if (result.success && result.data) {
-            const patients = result.data;
+        if (result.patients) {
+        const patients = result.patients;
             
             updateStats(patients);
             renderPatients(patients);
@@ -374,27 +487,132 @@ async function fetchPatients() {
     }
 }
 
+
+
+
+// ========================================
+// FETCH DOCTORS
+// ========================================
+
+async function fetchDoctors() {
+    try {
+        console.log('🔍 Fetching doctors...');
+
+        const result = await apiRequest('/doctors', 'GET');
+
+        console.log('📦 Doctors API response:', result);
+
+        const doctors = result.doctors || [];
+
+        allDoctors = doctors;
+
+        updateDoctorStats(doctors);
+        renderDoctors(doctors);
+
+        // Update doctor count in header
+        const doctorCount = document.getElementById('doctorCount');
+
+        if (doctorCount) {
+            doctorCount.textContent =
+                `${doctors.length} doctor${doctors.length !== 1 ? 's' : ''} registered`;
+        }
+
+        // Update sidebar badge
+        const doctorBadge = document.getElementById('alldoctorsBadge');
+
+        if (doctorBadge) {
+            doctorBadge.textContent = doctors.length;
+        }
+
+    } catch (error) {
+
+        console.error('❌ Fetch doctors error:', error);
+
+        const loading = document.getElementById('doctorLoading');
+
+        if (loading) {
+            loading.innerHTML = `
+                <i class="fas fa-exclamation-circle"
+                   style="font-size: 40px; color: var(--danger);"></i>
+
+                <p style="margin-top: 12px;">
+                    Failed to load doctors.
+                </p>
+
+                <button
+                    onclick="fetchDoctors()"
+                    style="
+                        margin-top: 12px;
+                        padding: 8px 24px;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">
+                    Retry
+                </button>
+            `;
+        }
+
+        showToast(
+            'Failed to load doctors: ' + error.message,
+            'error'
+        );
+    }
+}
 // ========================================
 // UPDATE STATS
 // ========================================
 
-function updateStats(patients) {
-    const total = patients.length;
-    const active = patients.filter(p => p.user?.isEmailVerified === true && !p.deletedAt).length;
-    const pending = patients.filter(p => p.user?.isEmailVerified === false && !p.deletedAt).length;
-    const inactive = patients.filter(p => p.deletedAt !== null).length;
+// function updateStats(patients) {
+//     const total = patients.length;
+//     const active = patients.filter(p => p.user?.isEmailVerified === true && !p.deletedAt).length;
+//     const pending = patients.filter(p => p.user?.isEmailVerified === false && !p.deletedAt).length;
+//     const inactive = patients.filter(p => p.deletedAt !== null).length;
 
-    const totalEl = document.getElementById('totalPatients');
-    const activeEl = document.getElementById('activePatients');
-    const pendingEl = document.getElementById('pendingPatients');
-    const inactiveEl = document.getElementById('inactivePatients');
+//     const totalEl = document.getElementById('totalPatients');
+//     const activeEl = document.getElementById('activePatients');
+//     const pendingEl = document.getElementById('pendingPatients');
+//     const inactiveEl = document.getElementById('inactivePatients');
 
-    if (totalEl) totalEl.textContent = total;
-    if (activeEl) activeEl.textContent = active;
-    if (pendingEl) pendingEl.textContent = pending;
-    if (inactiveEl) inactiveEl.textContent = inactive;
+//     if (totalEl) totalEl.textContent = total;
+//     if (activeEl) activeEl.textContent = active;
+//     if (pendingEl) pendingEl.textContent = pending;
+//     if (inactiveEl) inactiveEl.textContent = inactive;
+// }
+
+
+// ========================================
+// UPDATE DOCTOR STATS
+// ========================================
+
+function updateDoctorStats(doctors) {
+
+    const total = doctors.length;
+
+    const active = doctors.filter(
+        doctor => doctor.deletedAt === null
+    ).length;
+
+    const inactive = doctors.filter(
+        doctor => doctor.deletedAt !== null
+    ).length;
+
+    const totalEl = document.getElementById('totalDoctors');
+    const activeEl = document.getElementById('activeDoctors');
+    const inactiveEl = document.getElementById('inactiveDoctors');
+
+    if (totalEl) {
+        totalEl.textContent = total;
+    }
+
+    if (activeEl) {
+        activeEl.textContent = active;
+    }
+
+    if (inactiveEl) {
+        inactiveEl.textContent = inactive;
+    }
 }
-
 // ========================================
 // RENDER PATIENTS
 // ========================================
@@ -479,13 +697,229 @@ document.addEventListener('DOMContentLoaded', function() {
     highlightActivePage();
     initStatusToggle();
     initSearch();
+
+    if (window.location.pathname.includes('sa_dashboard.html')) {
+        fetchDashboardStats();
+    }
     
     // Fetch patients if on patients page
     if (window.location.pathname.includes('sa_patients.html')) {
         fetchPatients();
     }
+
+    if (window.location.pathname.includes('sa_doctors.html')) {
+    fetchDoctors();
+}
 });
 
+// ========================================
+// RENDER DOCTORS
+// ========================================
+
+// ========================================
+// RENDER DOCTORS
+// ========================================
+
+function renderDoctors(doctors) {
+
+    const container = document.getElementById('doctorCards');
+    const loading = document.getElementById('doctorLoading');
+    const empty = document.getElementById('doctorEmpty');
+
+    if (!container) {
+        console.error('❌ doctorCards container not found');
+        return;
+    }
+
+    // Hide loading
+    if (loading) {
+        loading.style.display = 'none';
+    }
+
+    // Clear previous cards
+    container.innerHTML = '';
+
+    // No doctors
+    if (!doctors || doctors.length === 0) {
+
+        if (empty) {
+            empty.style.display = 'block';
+        }
+
+        return;
+    }
+
+    if (empty) {
+        empty.style.display = 'none';
+    }
+
+    // Create cards
+    doctors.forEach(doctor => {
+
+        const firstName = doctor.user?.firstName || '';
+        const lastName = doctor.user?.lastName || '';
+        const otherNames = doctor.user?.otherNames || '';
+
+        const fullName =
+            `${firstName} ${lastName}`.trim() || 'Unknown Doctor';
+
+        const initials =
+            `${firstName.charAt(0)}${lastName.charAt(0)}`
+            .toUpperCase() || 'DR';
+
+        const email =
+            doctor.user?.email || 'N/A';
+
+        const phone =
+            doctor.phoneNumber || 'N/A';
+
+        const specialty =
+            doctor.specialty || 'N/A';
+
+        const experience =
+            doctor.yearsOfExperience ?? 0;
+
+        const status =
+            doctor.deletedAt === null
+                ? 'Active'
+                : 'Inactive';
+
+        const statusClass =
+            doctor.deletedAt === null
+                ? 'active'
+                : 'inactive';
+
+        const card = document.createElement('div');
+
+        card.className = 'doctor-card';
+
+        card.innerHTML = `
+
+            <div class="header">
+
+                <div class="avatar">
+                    ${initials}
+                </div>
+
+                <div class="info">
+
+                    <div class="name">
+                        Dr. ${fullName}
+                    </div>
+
+                    <div class="specialty">
+                        ${specialty}
+                        · ID: DOC-${String(doctor.id).padStart(3, '0')}
+                    </div>
+
+                </div>
+
+                <span class="status-badge ${statusClass}">
+                    ${status}
+                </span>
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="item">
+
+                    <span class="label">
+                        Email
+                    </span>
+
+                    <span class="value">
+                        ${email}
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span class="label">
+                        Phone
+                    </span>
+
+                    <span class="value">
+                        ${phone}
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span class="label">
+                        Specialty
+                    </span>
+
+                    <span class="value">
+                        ${specialty}
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span class="label">
+                        Experience
+                    </span>
+
+                    <span class="value">
+                        ${experience} year${experience !== 1 ? 's' : ''}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="btn-view"
+                    onclick="viewDoctor(${doctor.id})">
+                    <i class="fas fa-eye"></i>
+                    View
+                </button>
+
+                <button
+                    class="btn-edit"
+                    onclick="editDoctor(${doctor.id})">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+
+
+                <button
+                    class="btn-toggle"
+                    onclick="toggleDoctor(${doctor.id})">
+
+                    <i class="fas fa-power-off"></i>
+                    Toggle
+
+                </button>
+
+
+                <button
+                    class="btn-delete"
+                    onclick="deleteDoctor(${doctor.id})">
+
+                    <i class="fas fa-trash"></i>
+                    Delete
+
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(card);
+    });
+}
 // ========================================
 // CREATE ADMIN
 // ========================================
@@ -516,6 +950,162 @@ async function deleteAdmin(id) {
         throw error;
     }
 }
+// ========================================
+// VIEW DOCTOR
+// ========================================
+
+async function viewDoctor(id) {
+
+    try {
+
+        console.log(`🔍 Fetching doctor #${id}...`);
+
+        const result = await apiRequest(`/doctors/${id}`, 'GET');
+
+        console.log('📦 Doctor details:', result);
+
+        const doctor = result.doctor || result.data;
+
+        if (!doctor) {
+            throw new Error('Doctor information not found.');
+        }
+
+        const firstName = doctor.user?.firstName || '';
+        const lastName = doctor.user?.lastName || '';
+        const otherNames = doctor.user?.otherNames || '';
+
+        const fullName =
+            `${firstName} ${otherNames} ${lastName}`
+                .replace(/\s+/g, ' ')
+                .trim();
+
+        showDoctorModal(doctor, fullName);
+
+    } catch (error) {
+
+        console.error('❌ View doctor error:', error);
+
+        showToast(
+            'Failed to load doctor: ' + error.message,
+            'error'
+        );
+    }
+}
+
+// ========================================
+// SHOW DOCTOR MODAL
+// ========================================
+
+function showDoctorModal(doctor, fullName) {
+
+    const modal = document.getElementById('doctorModal');
+
+    if (!modal) return;
+
+    const firstName =
+        doctor.user?.firstName || '';
+
+    const lastName =
+        doctor.user?.lastName || '';
+
+    const initials =
+        `${firstName.charAt(0)}${lastName.charAt(0)}`
+            .toUpperCase() || 'DR';
+
+
+    document.getElementById('modalDoctorAvatar')
+        .textContent = initials;
+
+    document.getElementById('modalDoctorName')
+        .textContent = `Dr. ${fullName}`;
+
+    document.getElementById('modalDoctorSpecialty')
+        .textContent = doctor.specialty || 'N/A';
+
+    document.getElementById('modalDoctorId')
+        .textContent =
+        `DOC-${String(doctor.id).padStart(3, '0')}`;
+
+    document.getElementById('modalDoctorEmail')
+        .textContent =
+        doctor.user?.email || 'N/A';
+
+    document.getElementById('modalDoctorPhone')
+        .textContent =
+        doctor.phoneNumber || 'N/A';
+
+    document.getElementById('modalDoctorGender')
+        .textContent =
+        doctor.gender || 'N/A';
+
+    document.getElementById('modalDoctorDOB')
+        .textContent =
+        doctor.dateOfBirth
+            ? new Date(doctor.dateOfBirth)
+                .toLocaleDateString()
+            : 'N/A';
+
+    document.getElementById('modalDoctorExperience')
+        .textContent =
+        `${doctor.yearsOfExperience ?? 0} year${
+            doctor.yearsOfExperience === 1 ? '' : 's'
+        }`;
+
+    document.getElementById('modalDoctorEmailStatus')
+        .textContent =
+        doctor.user?.isEmailVerified
+            ? 'Verified'
+            : 'Not Verified';
+
+    document.getElementById('modalDoctorStatus')
+        .textContent =
+        doctor.deletedAt === null
+            ? 'Active'
+            : 'Inactive';
+
+    document.getElementById('modalDoctorBio')
+        .textContent =
+        doctor.bio || 'No biography available.';
+
+
+    modal.classList.add('open');
+}
+
+// ========================================
+// CLOSE DOCTOR MODAL
+// ========================================
+
+function closeDoctorModal() {
+
+    const modal =
+        document.getElementById('doctorModal');
+
+    if (modal) {
+        modal.classList.remove('open');
+    }
+}
+
+document.addEventListener('click', function(e) {
+
+    const modal =
+        document.getElementById('doctorModal');
+
+    if (
+        modal &&
+        e.target === modal
+    ) {
+        closeDoctorModal();
+    }
+
+});
+
+document.addEventListener('keydown', function(e) {
+
+    if (e.key === 'Escape') {
+        closeDoctorModal();
+    }
+
+});
 
 // ========================================
 // UPDATE ADMIN
@@ -529,5 +1119,28 @@ async function updateAdmin(id, adminData) {
     } catch (error) {
         console.error('❌ Update admin error:', error);
         throw error;
+    }
+}
+
+async function fetchDashboardStats() {
+    try {
+        const result = await apiRequest('/reports/stats', 'GET');
+        const stats = result.data || {};
+        const values = {
+            totalDoctors: stats.doctors?.total ?? 0,
+            totalPatients: stats.patients?.total ?? 0,
+            todayAppointments: stats.appointments?.today ?? 0,
+            totalAdmins: stats.admins?.total ?? 0,
+            pendingAppointments: stats.appointments?.pending ?? 0,
+            totalAppointments: stats.appointments?.total ?? 0,
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        });
+    } catch (error) {
+        console.error('Dashboard stats error:', error);
+        showToast('Failed to load dashboard statistics', 'error');
     }
 }

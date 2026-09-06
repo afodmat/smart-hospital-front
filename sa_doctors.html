@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Doctors - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./css/sadashboard.css" />
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="sa_dashboard.html" data-page="admin-dashboard" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="sa_patients.html" data-page="admin-patients"><i class="fas fa-user-md"></i> Patients <span class="badge">8</span></a>
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="doctorsToggle">
+                    <i class="fas fa-user-md"></i>
+                    <span>Doctors</span>
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="doctorsMenu">
+                    <a href="sa_doctors.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Doctors
+                        <span class="badge" id="alldoctorsBadge">0</span>
+                    </a>
+                    <a href="sa_add_doctor.html" data-page="new-doctor">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+            <button class="dropdown-toggle" id="adminToggle">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+                <span class="badge" id="adminBadge">0</span>
+                <span class="arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu" id="adminMenu">
+                <a href="sa_admins.html" data-page="all-admins">
+                    <i class="fas fa-users-cog"></i> All Admins
+                    <span class="badge" id="allAdminBadge">0</span>
+                </a>
+
+                <a href="sa_add_admin.html" data-page="new-admin">
+                    <i class="fas fa-plus-circle"></i> Add New Admin
+                </a>
+            </div>
+        </div>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="sa_reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="sa_settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Super Admin</div>
+                    <div class="role">System Administrator</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>
+                    Manage Doctors
+                    <small id="doctorCount">0 doctors registered</small>
+                </h1>
+                            </div>
+            <div class="topbar-right">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search doctors..." id="searchInput" /></div>
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+            <!-- In sa_doctors.html header -->
+            <div class="card-header">
+                <h3><i class="fas fa-list" style="color: var(--primary-lighter);"></i> All Doctors</h3>
+                <a href="sa_add_doctor.html" class="card-action">
+                    <i class="fas fa-user-plus"></i> Add Doctor
+                </a>
+            </div>
+        </header>
+
+        <div class="admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
+
+    <div class="admin-stat-card">
+        <div class="icon purple">
+            <i class="fas fa-user-md"></i>
+        </div>
+        <div class="info">
+            <div class="number" id="totalDoctors">0</div>
+            <div class="label">Total Doctors</div>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="icon green">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="info">
+            <div class="number" id="activeDoctors">0</div>
+            <div class="label">Active</div>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="icon red">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="info">
+            <div class="number" id="inactiveDoctors">0</div>
+            <div class="label">Inactive</div>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="icon blue">
+            <i class="fas fa-building"></i>
+        </div>
+        <div class="info">
+            <div class="number" id="totalDepartments">0</div>
+            <div class="label">Departments</div>
+        </div>
+    </div>
+
+</div>
+
+        <div class="admin-grid">
+            <div class="main-col">
+                <!-- Doctor Cards -->
+                <div class="main-col">
+
+    <div id="doctorLoading" style="text-align: center; padding: 40px;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 30px;"></i>
+        <p>Loading doctors...</p>
+    </div>
+
+    <div id="doctorCards"></div>
+
+    <div id="doctorEmpty" style="display: none; text-align: center; padding: 40px;">
+        <i class="fas fa-user-md" style="font-size: 40px;"></i>
+        <p>No doctors registered yet.</p>
+        <a href="sa_add_doctor.html" class="btn-primary">
+            Add Your First Doctor
+        </a>
+    </div>
+
+</div>
+                <!-- Add more doctor cards as needed -->
+            </div>
+
+            <div class="side-col">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-user-plus" style="color: var(--primary-lighter);"></i> Register New Doctor</h3></div>
+                    <form class="register-form" id="registerDoctorForm">
+                        <div class="form-group"><label>Full Name <span class="required">*</span></label><input type="text" placeholder="Dr. Full Name" required /></div>
+                        <div class="form-group"><label>Email <span class="required">*</span></label><input type="email" placeholder="doctor@hospital.com" required /></div>
+                        <div class="form-group"><label>Phone Number <span class="required">*</span></label><input type="tel" placeholder="+1 234 567 890" required /></div>
+                        <div class="form-group"><label>Specialty <span class="required">*</span></label>
+                            <select required>
+                                <option value="">Select Specialty...</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Department <span class="required">*</span></label>
+                            <select required>
+                                <option value="">Select Department...</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary" onclick="registerDoctor(event)"><i class="fas fa-user-plus"></i> Register Doctor</button>
+                    </form>
+                </div>
+                <div class="card" style="background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white; text-align: center; padding: 24px;">
+                    <div style="font-size: 28px; font-weight: 700;">8</div>
+                    <div style="font-size: 14px; opacity: 0.7;">Total Doctors</div>
+                    <div style="margin-top: 12px; display: flex; justify-content: center; gap: 24px;">
+                        <div><div style="font-size: 18px; font-weight: 600;">6</div><div style="font-size: 11px; opacity: 0.6;">Active</div></div>
+                        <div><div style="font-size: 18px; font-weight: 600;">2</div><div style="font-size: 11px; opacity: 0.6;">Inactive</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- DOCTOR DETAILS MODAL -->
+
+<div class="doctor-modal-overlay" id="doctorModal">
+
+    <div class="doctor-modal">
+
+        <div class="doctor-modal-header">
+
+            <h2>
+                <i class="fas fa-user-md"></i>
+                Doctor Details
+            </h2>
+
+            <button
+                type="button"
+                class="doctor-modal-close"
+                onclick="closeDoctorModal()">
+                &times;
+            </button>
+
+        </div>
+
+
+        <div class="doctor-modal-body">
+
+            <div class="doctor-profile-header">
+
+                <div
+                    class="doctor-profile-avatar"
+                    id="modalDoctorAvatar">
+                    DR
+                </div>
+
+                <div>
+
+                    <h2 id="modalDoctorName">
+                        Doctor Name
+                    </h2>
+
+                    <p id="modalDoctorSpecialty">
+                        Specialty
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="doctor-info-grid">
+
+                <div class="doctor-info-item">
+                    <span>Doctor ID</span>
+                    <strong id="modalDoctorId">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Email</span>
+                    <strong id="modalDoctorEmail">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Phone</span>
+                    <strong id="modalDoctorPhone">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Gender</span>
+                    <strong id="modalDoctorGender">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Date of Birth</span>
+                    <strong id="modalDoctorDOB">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Experience</span>
+                    <strong id="modalDoctorExperience">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Email Status</span>
+                    <strong id="modalDoctorEmailStatus">-</strong>
+                </div>
+
+                <div class="doctor-info-item">
+                    <span>Account Status</span>
+                    <strong id="modalDoctorStatus">-</strong>
+                </div>
+
+            </div>
+
+
+            <div class="doctor-bio">
+
+                <h3>Biography</h3>
+
+                <p id="modalDoctorBio">
+                    No biography available.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/sa_dashboard.js"></script>
+    <script>
+        function registerDoctor(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Register Doctor';
+                btn.disabled = false;
+                showToast('✅ Doctor registered successfully!', 'success');
+                document.getElementById('registerDoctorForm').reset();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

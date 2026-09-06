@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Admin - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./css/sadashboard.css" />
+</head>
+<body>
+
+   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="sa_dashboard.html" data-page="admin-dashboard" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="sa_patients.html" data-page="admin-patients"><i class="fas fa-user-md"></i> Patients <span class="badge">8</span></a>
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="doctorsToggle">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Doctors</span>
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="doctorsMenu">
+                    <a href="sa_doctors.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Doctors
+                        <span class="badge" id="alldoctorsBadge">0</span>
+                    </a>
+                    <a href="sa_add_doctor.html" data-page="new-doctor">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+            <button class="dropdown-toggle" id="adminToggle">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+                <span class="badge" id="adminBadge">0</span>
+                <span class="arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu" id="adminMenu">
+                <a href="sa_admins.html" data-page="all-admins">
+                    <i class="fas fa-users-cog"></i> All Admins
+                    <span class="badge" id="allAdminBadge">0</span>
+                </a>
+
+                <a href="sa_add_admin.html" data-page="new-admin">
+                    <i class="fas fa-plus-circle"></i> Add New Admin
+                </a>
+            </div>
+        </div>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="sa_reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="sa_settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Super Admin</div>
+                    <div class="role">System Administrator</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>Add New Admin <small>Register a new administrator</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <div class="form-container">
+            <div class="form-card">
+                <div id="formMessage" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;"></div>
+
+                <form id="addAdminForm">
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" id="firstName" placeholder="Enter first name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" id="lastName" placeholder="Enter last name" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Other Names</label>
+                            <input type="text" id="otherNames" placeholder="Enter middle names (optional)" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email <span class="required">*</span></label>
+                                <input type="email" id="email" placeholder="admin@hospital.com" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Role <span class="required">*</span></label>
+                                <select id="role" required>
+                                    <option value="ADMIN">Admin</option>
+                                    <option value="SUPER_ADMIN">Super Admin</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password <span class="required">*</span></label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" placeholder="Min 8 characters" required />
+                                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-hint">Password must be at least 8 characters</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password <span class="required">*</span></label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirmPassword" placeholder="Re-enter password" required />
+                                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save" id="submitBtn">
+                            <i class="fas fa-user-shield"></i> Register Admin
+                        </button>
+                        <button type="reset" class="btn-cancel" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Clear Form
+                        </button>
+                        <a href="sa_admins.html" class="btn-back">
+                            <i class="fas fa-arrow-left"></i> Back to Admins
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/sa_dashboard.js"></script>
+    <script>
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const icon = input.parentElement.querySelector('.toggle-password i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('addAdminForm').reset();
+            document.getElementById('formMessage').style.display = 'none';
+            document.querySelectorAll('.password-wrapper input').forEach(input => {
+                input.type = 'password';
+                const icon = input.parentElement.querySelector('.toggle-password i');
+                if (icon) icon.className = 'fas fa-eye';
+            });
+        }
+
+        function showFormMessage(message, type = 'success') {
+            const container = document.getElementById('formMessage');
+            container.style.display = 'block';
+            container.textContent = message;
+            container.className = type === 'success' ? 'form-message success' : 'form-message error';
+            setTimeout(() => { container.style.display = 'none'; }, 5000);
+        }
+
+        document.getElementById('addAdminForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const otherNames = document.getElementById('otherNames').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+
+            // Validation
+            if (!firstName || !lastName || !email || !password || !role) {
+                showFormMessage('Please fill in all required fields (*)', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showFormMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showFormMessage('Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showFormMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            const adminData = {
+                firstName,
+                lastName,
+                otherNames: otherNames || null,
+                email,
+                password,
+                role,
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+            try {
+                const result = await apiRequest('/admins', 'POST', adminData);
+                
+                if (result.success) {
+                    showFormMessage(`✅ ${result.message || 'Admin registered successfully. Check the email address for verification.'}`, 'success');
+                    showToast('Admin created. Verification email sent.', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'sa_admins.html';
+                    }, 2000);
+                } else {
+                    showFormMessage('❌ Failed to register admin: ' + (result.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showFormMessage('❌ Error: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-shield"></i> Register Admin';
+            }
+        });
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const hint = this.parentElement.nextElementSibling;
+            if (password.length === 0) {
+                hint.textContent = 'Password must be at least 8 characters';
+                hint.style.color = 'var(--gray-500)';
+            } else if (password.length < 8) {
+                hint.textContent = `Password must be at least 8 characters (${password.length}/8)`;
+                hint.style.color = 'var(--danger)';
+            } else {
+                hint.textContent = '✅ Password strength: Good';
+                hint.style.color = 'var(--success)';
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirm = this.value;
+            this.style.borderColor = (confirm.length > 0 && password !== confirm) ? 'var(--danger)' : '';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+
+    <!-- ========================================
+    SIDEBAR
+    ======================================== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="doc_profile.html" data-page="profile" class="active">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Profile
+                    <small>Manage your account</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Profile Content -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Left Column -->
+            <div class="card">
+                <div style="text-align: center; padding: 16px 0 24px;">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 600; margin: 0 auto 12px;">DS</div>
+                    <h2 style="font-size: 22px;">Dr. Septiannisa</h2>
+                    <p style="color: var(--gray-500);">Cardiologist · ID: DOC-001</p>
+                    <button onclick="showToast('Edit profile form opening...', 'info')" style="margin-top: 12px; padding: 8px 24px; border: 2px solid var(--primary-lighter); border-radius: 8px; background: none; color: var(--primary-lighter); cursor: pointer; font-weight: 500; transition: var(--transition);">
+                        Edit Profile
+                    </button>
+                </div>
+
+                <div style="border-top: 1px solid var(--gray-200); padding-top: 16px;">
+                    <div class="quick-stat"><span class="label">Department</span><span class="value">Cardiology</span></div>
+                    <div class="quick-stat"><span class="label">Specialization</span><span class="value">Cardiac Surgery</span></div>
+                    <div class="quick-stat"><span class="label">Years Experience</span><span class="value">12 years</span></div>
+                    <div class="quick-stat"><span class="label">Patients Treated</span><span class="value">1,247</span></div>
+                    <div class="quick-stat"><span class="label">Rating</span><span class="value">⭐ 4.8 (72 reviews)</span></div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Account Details</h3>
+                <div class="quick-stat"><span class="label">Full Name</span><span class="value">Dr. Septiannisa</span></div>
+                <div class="quick-stat"><span class="label">Email</span><span class="value">dr.septiannisa@hospital.com</span></div>
+                <div class="quick-stat"><span class="label">Phone</span><span class="value">+1 234 567 890</span></div>
+                <div class="quick-stat"><span class="label">License Number</span><span class="value">MD-2021-0458</span></div>
+                <div class="quick-stat"><span class="label">Office</span><span class="value">Room 304, Wing B</span></div>
+                <div class="quick-stat"><span class="label">Working Hours</span><span class="value">8:00 AM - 6:00 PM</span></div>
+                <div class="quick-stat"><span class="label">Languages</span><span class="value">English, Spanish</span></div>
+
+                <div style="margin-top: 16px; border-top: 1px solid var(--gray-200); padding-top: 16px;">
+                    <button onclick="showToast('Opening settings...', 'info')" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: var(--gray-100); cursor: pointer; font-size: 14px; transition: var(--transition);">
+                        <i class="fas fa-cog"></i> Account Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/doc_dashboard.js"></script>
+</body>
+</html>

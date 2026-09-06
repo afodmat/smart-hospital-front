@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Today's Schedule - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule" class="active">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Today's Schedule
+                    <small>October 22, 2026</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search schedule..." id="searchInput" />
+                </div>
+                <div class="status-toggle" id="statusToggle">
+                    <span class="indicator online" id="statusIndicator"></span>
+                    <span class="status-text" id="statusText">Online</span>
+                </div>
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue"><i class="fas fa-calendar-alt"></i></div>
+                <div class="info">
+                    <div class="number">8</div>
+                    <div class="label">Total Appointments</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon yellow"><i class="fas fa-hourglass-half"></i></div>
+                <div class="info">
+                    <div class="number">4</div>
+                    <div class="label">Upcoming</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="info">
+                    <div class="number">3</div>
+                    <div class="label">Completed</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon red"><i class="fas fa-times-circle"></i></div>
+                <div class="info">
+                    <div class="number">1</div>
+                    <div class="label">Cancelled</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule List -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock" style="color: var(--primary-lighter); margin-right: 8px;"></i>Full Schedule</h3>
+                <a href="new-appointment.html" class="card-action"><i class="fas fa-plus"></i> Add Appointment</a>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">08:00 AM</span>
+                <span class="status-dot completed"></span>
+                <div class="info">
+                    <div class="name">James Wilson</div>
+                    <div class="type">Routine Checkup · Low</div>
+                </div>
+                <span style="font-size: 12px; color: var(--gray-500);">Completed</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">09:00 AM</span>
+                <span class="status-dot scheduled"></span>
+                <div class="info">
+                    <div class="name">John Smith</div>
+                    <div class="type">Follow-up · Critical</div>
+                </div>
+                <span style="font-size: 12px; color: var(--info);">Next</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">10:30 AM</span>
+                <span class="status-dot scheduled"></span>
+                <div class="info">
+                    <div class="name">Sarah Johnson</div>
+                    <div class="type">Initial Consultation · High</div>
+                </div>
+                <span style="font-size: 12px; color: var(--gray-500);">Scheduled</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">12:00 PM</span>
+                <span class="status-dot completed"></span>
+                <div class="info">
+                    <div class="name">Michael Chen</div>
+                    <div class="type">Follow-up · High</div>
+                </div>
+                <span style="font-size: 12px; color: var(--gray-500);">Completed</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">01:00 PM</span>
+                <span class="status-dot" style="background: var(--accent);"></span>
+                <div class="info">
+                    <div class="name">Lunch Break</div>
+                    <div class="type">—</div>
+                </div>
+                <span style="font-size: 12px; color: var(--accent);">Break</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">02:00 PM</span>
+                <span class="status-dot scheduled"></span>
+                <div class="info">
+                    <div class="name">Emily Davis</div>
+                    <div class="type">Routine Checkup · Medium</div>
+                </div>
+                <span style="font-size: 12px; color: var(--gray-500);">Scheduled</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">03:30 PM</span>
+                <span class="status-dot cancelled"></span>
+                <div class="info">
+                    <div class="name">Robert Wilson</div>
+                    <div class="type">Medication Refill · Low</div>
+                </div>
+                <span style="font-size: 12px; color: var(--danger);">Cancelled</span>
+            </div>
+
+            <div class="schedule-item">
+                <span class="time">05:00 PM</span>
+                <span class="status-dot scheduled"></span>
+                <div class="info">
+                    <div class="name">Jessica Martinez</div>
+                    <div class="type">Follow-up · Medium</div>
+                </div>
+                <span style="font-size: 12px; color: var(--gray-500);">Scheduled</span>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/doc_dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Records - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">6</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i> Today's Schedule
+                    </a>
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Appointments
+                        <span class="badge">6</span>
+                    </a>
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i> My Patients
+                <span class="badge">12</span>
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+                <span class="badge">3</span>
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records" class="active">
+                <i class="fas fa-notes-medical"></i> Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">2</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">DS</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Dr. Septiannisa</div>
+                    <div class="role">Cardiologist</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Medical Records
+                    <small>Patient health history</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search records..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">DS</div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue"><i class="fas fa-users"></i></div>
+                <div class="info">
+                    <div class="number">12</div>
+                    <div class="label">Total Patients</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green"><i class="fas fa-file-medical-alt"></i></div>
+                <div class="info">
+                    <div class="number">45</div>
+                    <div class="label">Total Records</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon yellow"><i class="fas fa-clock"></i></div>
+                <div class="info">
+                    <div class="number">5</div>
+                    <div class="label">Recent Updates</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon purple"><i class="fas fa-prescription-bottle-alt"></i></div>
+                <div class="info">
+                    <div class="number">18</div>
+                    <div class="label">Prescriptions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Records List -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-folder-open" style="color: var(--primary-lighter); margin-right: 8px;"></i>Patient Records</h3>
+                <button onclick="showToast('Opening new record form...', 'info')" class="card-action"><i class="fas fa-plus"></i> New Record</button>
+            </div>
+
+            <div class="queue-item" onclick="showToast('Opening John Smith\'s records...', 'info')">
+                <div class="left">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">JS</div>
+                    <div class="info">
+                        <div class="name">John Smith</div>
+                        <div class="details">#P-0042 · Last visit: Oct 22, 2026 · 3 records</div>
+                    </div>
+                </div>
+                <span style="font-size: 13px; color: var(--gray-500);">Updated today</span>
+            </div>
+
+            <div class="queue-item" onclick="showToast('Opening Sarah Johnson\'s records...', 'info')">
+                <div class="left">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">SJ</div>
+                    <div class="info">
+                        <div class="name">Sarah Johnson</div>
+                        <div class="details">#P-0087 · Last visit: Oct 20, 2026 · 2 records</div>
+                    </div>
+                </div>
+                <span style="font-size: 13px; color: var(--gray-500);">Updated 2 days ago</span>
+            </div>
+
+            <div class="queue-item" onclick="showToast('Opening Michael Chen\'s records...', 'info')">
+                <div class="left">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">MC</div>
+                    <div class="info">
+                        <div class="name">Michael Chen</div>
+                        <div class="details">#P-0156 · Last visit: Oct 18, 2026 · 4 records</div>
+                    </div>
+                </div>
+                <span style="font-size: 13px; color: var(--gray-500);">Updated 4 days ago</span>
+            </div>
+
+            <div class="queue-item" onclick="showToast('Opening Emily Davis\'s records...', 'info')">
+                <div class="left">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-lighter); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">ED</div>
+                    <div class="info">
+                        <div class="name">Emily Davis</div>
+                        <div class="details">#P-0234 · Last visit: Oct 15, 2026 · 2 records</div>
+                    </div>
+                </div>
+                <span style="font-size: 13px; color: var(--gray-500);">Updated 7 days ago</span>
+            </div>
+        </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/doc_dashboard.js"></script>
+</body>
+</html>

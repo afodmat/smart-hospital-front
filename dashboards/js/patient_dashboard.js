@@ -1,14 +1,13 @@
-
+// ========================================
 // CONFIGURATION
-const API_BASE_URL = 'https://smart-hospital-fet1.onrender.com';
-const FRONTEND_URL = 'https://smart-hospitalsystem.netlify.app';
-
-// AUTHENTICATION
+// ========================================
+const API_BASE_URL = 'http://localhost:5001';
+const FRONTEND_URL = 'http://127.0.0.1:5500';
 
 function checkAuth() {
     const token = localStorage.getItem('access_token');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = '../login.html';
     }
 }
 
@@ -16,14 +15,10 @@ function handleLogout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
-    window.location.href = 'login.html';
+    window.location.href = '../login.html';
 }
 
-// API REQUEST
-
 async function apiRequest(endpoint, method = 'GET', data = null) {
-    const url = `${API_BASE_URL}${endpoint}`;
-
     const options = {
         method,
         credentials: 'include',
@@ -41,57 +36,38 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         options.body = JSON.stringify(data);
     }
 
-    try {
-        const response = await fetch(url, options);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    const result = await response.json().catch(() => ({}));
 
-        const result = await response.json();
-
-        if (response.status === 401) {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-            throw new Error('Authentication required. Please log in.');
-        }
-
-        if (!response.ok) {
-            throw new Error(
-                result.message || `HTTP error ${response.status}`
-            );
-        }
-
-        return result;
-
-    } catch (error) {
-        console.error('❌ API Error:', error);
-        throw error;
+    if (response.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        window.location.href = '../login.html';
+        throw new Error('Authentication required. Please log in.');
     }
+
+    if (!response.ok) {
+        throw new Error(result.message || `HTTP error ${response.status}`);
+    }
+
+    return result;
 }
 
-// TOAST NOTIFICATIONS
+// ========================================
+// DOM REFERENCES
+// ========================================
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+const toggleBtn = document.getElementById('toggleSidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const logoutBtn = document.getElementById('logoutBtn');
+const appointmentsToggle = document.getElementById('appointmentsToggle');
+const appointmentsMenu = document.getElementById('appointmentsMenu');
 
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(-20px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
-}
-
-// SIDEBAR FUNCTIONALITY
-
+// ========================================
+// SIDEBAR TOGGLE
+// ========================================
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
     const isMobile = window.innerWidth <= 768;
 
     if (isMobile) {
@@ -103,71 +79,74 @@ function toggleSidebar() {
     }
 }
 
-function initSidebar() {
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const appointmentsToggle = document.getElementById('appointmentsToggle');
-    const appointmentsMenu = document.getElementById('appointmentsMenu');
-
-    // Toggle sidebar
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', toggleSidebar);
-    }
-
-    // Close sidebar on overlay click (mobile)
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('mobile-open');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-    }
-
-    // Close sidebar on escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-        }
-    });
-
-    // Close sidebar on resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-        }
-    });
-
-    // Appointments dropdown
-    if (appointmentsToggle && appointmentsMenu) {
-        appointmentsToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            appointmentsMenu.classList.toggle('open');
-            const arrow = appointmentsToggle.querySelector('.arrow');
-            if (arrow) arrow.classList.toggle('open');
-        });
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.querySelector('.dropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                appointmentsMenu.classList.remove('open');
-                const arrow = appointmentsToggle.querySelector('.arrow');
-                if (arrow) arrow.classList.remove('open');
-            }
-        });
-    }
-
-    // Logout
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-    }
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleSidebar);
 }
 
-// HIGHLIGHT ACTIVE PAGE
+// ========================================
+// CLOSE SIDEBAR ON OVERLAY CLICK (Mobile)
+// ========================================
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('active');
+        }
+    });
+}
 
+// ========================================
+// CLOSE SIDEBAR ON ESCAPE KEY
+// ========================================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && window.innerWidth <= 768) {
+        sidebar.classList.remove('mobile-open');
+        sidebarOverlay.classList.remove('active');
+    }
+});
+
+// ========================================
+// CLOSE SIDEBAR ON RESIZE
+// ========================================
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove('mobile-open');
+        sidebarOverlay.classList.remove('active');
+    }
+});
+
+// ========================================
+// APPOINTMENTS DROPDOWN
+// ========================================
+let isDropdownOpen = false;
+
+if (appointmentsToggle && appointmentsMenu) {
+    appointmentsToggle.addEventListener('click', () => {
+        isDropdownOpen = !isDropdownOpen;
+        appointmentsMenu.classList.toggle('open');
+        const arrow = appointmentsToggle.querySelector('.arrow');
+        if (arrow) {
+            arrow.classList.toggle('open');
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.querySelector('.dropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            appointmentsMenu.classList.remove('open');
+            const arrow = appointmentsToggle.querySelector('.arrow');
+            if (arrow) {
+                arrow.classList.remove('open');
+            }
+            isDropdownOpen = false;
+        }
+    });
+}
+
+// ========================================
+// HIGHLIGHT ACTIVE PAGE
+// ========================================
 function highlightActivePage() {
     const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
     
@@ -200,8 +179,33 @@ function highlightActivePage() {
     });
 }
 
-// LOAD USER DATA
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+}
 
+// ========================================
+// TOAST NOTIFICATIONS
+// ========================================
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// ========================================
+// LOAD USER DATA
+// ========================================
 function loadUserData() {
     const userStr = localStorage.getItem('user');
     
@@ -218,10 +222,17 @@ function loadUserData() {
             if (nameEl) {
                 nameEl.textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
             }
-            if (avatarEl) avatarEl.textContent = initials;
-            if (topbarAvatar) topbarAvatar.textContent = initials;
-            if (profileAvatar) profileAvatar.textContent = initials;
+            if (avatarEl) {
+                avatarEl.textContent = initials;
+            }
+            if (topbarAvatar) {
+                topbarAvatar.textContent = initials;
+            }
+            if (profileAvatar) {
+                profileAvatar.textContent = initials;
+            }
 
+            // Update patient info if elements exist
             const patientName = document.getElementById('patientName');
             const patientEmail = document.getElementById('patientEmail');
             
@@ -237,9 +248,9 @@ function loadUserData() {
     }
 }
 
-
+// ========================================
 // HEART RATE CHART
-
+// ========================================
 function initHeartRateChart() {
     const ctx = document.getElementById('heartRateChart');
     if (!ctx) return;
@@ -319,20 +330,20 @@ function initHeartRateChart() {
     if (maxEl) maxEl.textContent = `${max} bpm`;
 }
 
+// ========================================
 // SEARCH
-
-function initSearch() {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            console.log('Searching for:', query);
-        });
-    }
+// ========================================
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        console.log('Searching for:', query);
+    });
 }
 
+// ========================================
 // PAGE-SPECIFIC INITIALIZATION
-
+// ========================================
 function initPage() {
     const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
     
@@ -351,13 +362,11 @@ function initPage() {
     }
 }
 
+// ========================================
 // INITIALIZATION
-
+// ========================================
 document.addEventListener('DOMContentLoaded', function() {
-    checkAuth();
     loadUserData();
     highlightActivePage();
-    initSidebar();
-    initSearch();
     initPage();
 });

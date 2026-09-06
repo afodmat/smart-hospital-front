@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Appointment - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/patient_dashboard.css" />
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>system</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="patient_dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge">4</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="patient_myappointment.html" data-page="appointments">
+                        <i class="fas fa-list"></i> My Appointments
+                        <span class="badge">4</span>
+                    </a>
+                    <a href="patient_new_appointment.html" data-page="book-appointment" class="active">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="#" data-page="medical-records">
+                <i class="fas fa-file-medical-alt"></i> Medical Records
+            </a>
+
+            <a href="patient_prescription.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+            </a>
+
+            <a href="#" data-page="health-analytics">
+                <i class="fas fa-chart-line"></i> Health Analytics
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="#" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">3</span>
+            </a>
+
+            <a href="#" data-page="security">
+                <i class="fas fa-shield-alt"></i> Privacy & Security
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SC</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Sabrina Carpenter</div>
+                    <div class="role">Patient</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    Book Appointment
+                    <small>Schedule your visit</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">SC</div>
+            </div>
+        </header>
+
+        <!-- Booking Container -->
+        <div class="booking-container">
+            <!-- Booking Form -->
+            <div class="booking-form">
+                <div class="form-title">📋 Schedule an Appointment</div>
+                <div class="form-subtitle">Fill in the details below to book your appointment</div>
+
+                <form id="bookingForm">
+                    <!-- Doctor Selection -->
+                    <div class="form-group">
+                        <label>Select Doctor <span class="required">*</span></label>
+                        <div class="doctor-grid" id="doctorGrid">
+                            <div class="doctor-option selected" data-id="1">
+                                <div class="doctor-avatar">DS</div>
+                                <div class="doctor-name">Dr. Septiannisa</div>
+                                <div class="doctor-specialty">Cardiologist</div>
+                                <span class="doctor-status available">Available</span>
+                            </div>
+                            <div class="doctor-option" data-id="2">
+                                <div class="doctor-avatar">SJ</div>
+                                <div class="doctor-name">Dr. Sarah Johnson</div>
+                                <div class="doctor-specialty">Dermatologist</div>
+                                <span class="doctor-status available">Available</span>
+                            </div>
+                            <div class="doctor-option" data-id="3" style="opacity:0.5; cursor: not-allowed;">
+                                <div class="doctor-avatar">MC</div>
+                                <div class="doctor-name">Dr. Michael Chen</div>
+                                <div class="doctor-specialty">Neurologist</div>
+                                <span class="doctor-status unavailable">Unavailable</span>
+                            </div>
+                            <div class="doctor-option" data-id="4">
+                                <div class="doctor-avatar">ED</div>
+                                <div class="doctor-name">Dr. Emily Davis</div>
+                                <div class="doctor-specialty">Pediatrician</div>
+                                <span class="doctor-status available">Available</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointmentDate">Date <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-calendar-day input-icon"></i>
+                                <input type="date" id="appointmentDate" value="2026-10-22" required />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime">Time <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-clock input-icon"></i>
+                                <input type="time" id="appointmentTime" value="10:30" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentType">Appointment Type <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-video input-icon"></i>
+                            <select id="appointmentType" required>
+                                <option value="">Select type...</option>
+                                <option value="IN_PERSON" selected>In-Person Visit</option>
+                                <option value="VIRTUAL">Virtual Consultation</option>
+                                <option value="PHONE">Phone Consultation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="triageLevel">Triage Level <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-triangle-exclamation input-icon"></i>
+                            <select id="triageLevel" required>
+                                <option value="">Select triage level...</option>
+                                <option value="LOW">Low - Routine checkup</option>
+                                <option value="MEDIUM" selected>Medium - Non-urgent symptoms</option>
+                                <option value="HIGH">High - Urgent symptoms</option>
+                                <option value="CRITICAL">Critical - Emergency (Call 911)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="symptoms">Symptoms / Reason for Visit <span class="required">*</span></label>
+                        <textarea id="symptoms" placeholder="Describe your symptoms or reason for visiting..." required>Chest pain and shortness of breath</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" placeholder="Any additional information for the doctor..." style="min-height: 60px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text"><i class="fas fa-check"></i> Book Appointment</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Summary Sidebar -->
+            <div class="summary-card">
+                <h3><i class="fas fa-receipt" style="color: var(--primary-lighter);"></i> Appointment Summary</h3>
+                <div class="summary-item">
+                    <span class="label">Doctor</span>
+                    <span class="value" id="summaryDoctor">Dr. Septiannisa</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Date & Time</span>
+                    <span class="value" id="summaryDateTime">Oct 22, 2026 · 10:30 AM</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Type</span>
+                    <span class="value" id="summaryType">In-Person Visit</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Triage Level</span>
+                    <span class="value" id="summaryTriage">Medium</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Status</span>
+                    <span class="value pending" id="summaryStatus">⏳ Pending</span>
+                </div>
+
+                <hr style="border-color: var(--gray-200); margin: 16px 0;" />
+
+                <div style="text-align: center; font-size: 13px; color: var(--gray-500);">
+                    <i class="fas fa-shield-alt"></i> Your information is secure and confidential
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/patient_dashboard.js"></script>
+    <script>
+        document.querySelectorAll('.doctor-option').forEach(option => {
+            option.addEventListener('click', function() {
+                if (this.style.cursor === 'not-allowed') return;
+
+                document.querySelectorAll('.doctor-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const name = this.querySelector('.doctor-name').textContent;
+                document.getElementById('summaryDoctor').textContent = name;
+            });
+        });
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+
+                // Show success toast
+                showToast('✅ Appointment booked successfully!', 'success');
+
+                // Redirect to appointments page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'appointments.html';
+                }, 1500);
+            }, 1500);
+        });
+
+        document.getElementById('appointmentDate').addEventListener('change', updateSummary);
+        document.getElementById('appointmentTime').addEventListener('change', updateSummary);
+        document.getElementById('appointmentType').addEventListener('change', updateSummary);
+        document.getElementById('triageLevel').addEventListener('change', updateSummary);
+
+        function updateSummary() {
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('appointmentTime').value;
+            const type = document.getElementById('appointmentType');
+            const triage = document.getElementById('triageLevel');
+
+            if (date && time) {
+                const d = new Date(date + 'T' + time);
+                document.getElementById('summaryDateTime').textContent = d.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                }) + ' · ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            if (type.value) {
+                const typeMap = {
+                    'IN_PERSON': 'In-Person Visit',
+                    'VIRTUAL': 'Virtual Consultation',
+                    'PHONE': 'Phone Consultation'
+                };
+                document.getElementById('summaryType').textContent = typeMap[type.value] || type.value;
+            }
+
+            if (triage.value) {
+                const triageMap = {
+                    'LOW': 'Low',
+                    'MEDIUM': 'Medium',
+                    'HIGH': 'High',
+                    'CRITICAL': 'Critical'
+                };
+                document.getElementById('summaryTriage').textContent = triageMap[triage.value] || triage.value;
+            }
+        }
+    </script>
+</body>
+</html>

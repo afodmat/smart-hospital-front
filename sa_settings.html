@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Settings - Smart Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./css/sadashboard.css" />
+    <style>
+        /* ========================================
+           SETTINGS SPECIFIC STYLES
+           ======================================== */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .settings-nav {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 0;
+            height: fit-content;
+        }
+
+        .settings-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .settings-nav .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        .settings-nav .nav-item.active {
+            background: var(--gray-50);
+            color: var(--primary-light);
+            border-left-color: var(--primary-light);
+        }
+
+        .settings-nav .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-panel {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        .settings-panel .panel-header {
+            margin-bottom: 24px;
+        }
+
+        .settings-panel .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .settings-panel .panel-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .settings-panel .form-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-panel .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .settings-panel .form-group .help-text {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .settings-panel .form-group input,
+        .settings-panel .form-group select,
+        .settings-panel .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: var(--gray-50);
+            font-family: inherit;
+        }
+
+        .settings-panel .form-group input:focus,
+        .settings-panel .form-group select:focus,
+        .settings-panel .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(44, 110, 156, 0.1);
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-row .info .title {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--gray-800);
+        }
+
+        .toggle-row .info .desc {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: var(--gray-300);
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .toggle.active {
+            background: var(--success);
+        }
+
+        .toggle .thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle.active .thumb {
+            left: 25px;
+        }
+
+        .btn-save {
+            padding: 12px 32px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            padding: 12px 32px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            margin-top: 24px;
+            padding: 20px;
+            border: 2px solid #fee2e2;
+            border-radius: var(--radius);
+            background: #fef2f2;
+        }
+
+        .danger-zone h4 {
+            color: var(--danger);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .danger-zone p {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 8px 0;
+            }
+
+            .settings-nav .nav-item {
+                padding: 8px 16px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+
+            .settings-nav .nav-item.active {
+                border-bottom-color: var(--primary-light);
+                border-left: none;
+            }
+
+            .settings-panel {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-panel {
+                padding: 16px;
+            }
+
+            .toggle-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div><span>Smart Hospital</span><small>Admin Portal</small></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="sa_dashboard.html" data-page="admin-dashboard" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="sa_patients.html" data-page="admin-patients"><i class="fas fa-user-md"></i> Patients <span class="badge">8</span></a>
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="doctorsToggle">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Doctors</span>
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="doctorsMenu">
+                    <a href="sa_doctors.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i> All Doctors
+                        <span class="badge" id="alldoctorsBadge">0</span>
+                    </a>
+                    <a href="sa_add_doctor.html" data-page="new-doctor">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+            <button class="dropdown-toggle" id="adminToggle">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+                <span class="badge" id="adminBadge">0</span>
+                <span class="arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </button>
+
+            <div class="dropdown-menu" id="adminMenu">
+                <a href="sa_admins.html" data-page="all-admins">
+                    <i class="fas fa-users-cog"></i> All Admins
+                    <span class="badge" id="allAdminBadge">0</span>
+                </a>
+
+                <a href="sa_add_admin.html" data-page="new-admin">
+                    <i class="fas fa-plus-circle"></i> Add New Admin
+                </a>
+            </div>
+        </div>
+            <a href="admin-appointments.html" data-page="admin-appointments"><i class="fas fa-calendar-check"></i> Appointments <span class="badge">6</span></a>
+            <a href="sa_reports.html" data-page="admin-reports"><i class="fas fa-chart-bar"></i> Reports & Analytics</a>
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+            <a href="sa_settings.html" data-page="admin-settings"><i class="fas fa-cog"></i> System Settings</a>
+            <a href="#" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SA</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Super Admin</div>
+                    <div class="role">System Administrator</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================
+    MAIN CONTENT
+    ======================================== -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <h1>System Settings <small>Configure hospital system</small></h1>
+            </div>
+            <div class="topbar-right">
+                <div class="avatar-small" id="topbarAvatar">SA</div>
+            </div>
+        </header>
+
+        <div class="settings-grid">
+            <!-- Navigation -->
+            <nav class="settings-nav" id="settingsNav">
+                <a href="#" class="nav-item active" data-panel="general">
+                    <i class="fas fa-sliders-h"></i> General
+                </a>
+                <a href="#" class="nav-item" data-panel="hospital">
+                    <i class="fas fa-hospital"></i> Hospital Info
+                </a>
+                <a href="#" class="nav-item" data-panel="security">
+                    <i class="fas fa-shield-alt"></i> Security
+                </a>
+                <a href="#" class="nav-item" data-panel="notifications">
+                    <i class="fas fa-bell"></i> Notifications
+                </a>
+                <a href="#" class="nav-item" data-panel="integrations">
+                    <i class="fas fa-plug"></i> Integrations
+                </a>
+                <a href="#" class="nav-item" data-panel="backup">
+                    <i class="fas fa-database"></i> Backup & Recovery
+                </a>
+            </nav>
+
+            <!-- Panels -->
+            <div class="settings-panel" id="settingsPanel">
+                <!-- ========================================
+                GENERAL PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-general">
+                    <div class="panel-header">
+                        <div class="panel-title">General Settings</div>
+                        <div class="panel-subtitle">Configure basic system preferences</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hospital Name</label>
+                        <input type="text" id="hospitalName" placeholder="Smart Hospital" />
+                        <div class="help-text">The name displayed across the system</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>System Timezone</label>
+                        <select id="timezone">
+                            <option value="UTC">UTC</option>
+                            <option value="America/New_York" selected>Eastern Time (EST)</option>
+                            <option value="America/Chicago">Central Time (CST)</option>
+                            <option value="America/Denver">Mountain Time (MST)</option>
+                            <option value="America/Los_Angeles">Pacific Time (PST)</option>
+                            <option value="Europe/London">London (GMT)</option>
+                            <option value="Africa/Nairobi">East Africa (EAT)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date Format</label>
+                        <select id="dateFormat">
+                            <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time Format</label>
+                        <select id="timeFormat">
+                            <option value="12h" selected>12-hour (AM/PM)</option>
+                            <option value="24h">24-hour</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('general')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- ========================================
+                HOSPITAL INFO PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-hospital" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Hospital Information</div>
+                        <div class="panel-subtitle">Manage hospital details and contact information</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hospital Name</label>
+                        <input type="text" id="hospName" placeholder="Smart Hospital" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="hospAddress" placeholder="123 Medical Center Drive" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="hospCity" placeholder="Los Angeles" />
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="hospState" placeholder="CA" />
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP Code</label>
+                            <input type="text" id="hospZip" placeholder="90001" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="hospPhone" placeholder="+1 (555) 123-4567" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="hospEmail" placeholder="info@smarthospital.com" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="text" id="hospWebsite" placeholder="https://www.smarthospital.com" />
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('hospital')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- ========================================
+                SECURITY PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-security" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Security Settings</div>
+                        <div class="panel-subtitle">Manage system security and access controls</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Two-Factor Authentication</div>
+                            <div class="desc">Require 2FA for all admin accounts</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Session Timeout</div>
+                            <div class="desc">Auto-logout after period of inactivity</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Session Timeout (minutes)</label>
+                        <input type="number" id="sessionTimeout" value="30" min="5" max="120" />
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">IP Whitelisting</div>
+                            <div class="desc">Only allow access from authorized IP addresses</div>
+                        </div>
+                        <div class="toggle" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Audit Logging</div>
+                            <div class="desc">Record all system activities for compliance</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('security')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- ========================================
+                NOTIFICATIONS PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-notifications" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Notification Settings</div>
+                        <div class="panel-subtitle">Configure system notifications and alerts</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Email Notifications</div>
+                            <div class="desc">Send system notifications via email</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">SMS Alerts</div>
+                            <div class="desc">Send critical alerts via SMS</div>
+                        </div>
+                        <div class="toggle" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Appointment Reminders</div>
+                            <div class="desc">Send reminders to patients before appointments</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reminder Time (hours before appointment)</label>
+                        <input type="number" id="reminderTime" value="24" min="1" max="72" />
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Low Stock Alerts</div>
+                            <div class="desc">Notify when medication inventory is low</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('notifications')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- ========================================
+                INTEGRATIONS PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-integrations" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Integrations</div>
+                        <div class="panel-subtitle">Connect with third-party services</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Google Calendar</div>
+                            <div class="desc">Sync appointments with Google Calendar</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Google API Key</label>
+                        <input type="text" id="googleApiKey" placeholder="Enter Google API Key..." />
+                        <div class="help-text">Required for Google Calendar integration</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Email Service (SMTP)</div>
+                            <div class="desc">Connect to SMTP email service</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>SMTP Host</label>
+                        <input type="text" id="smtpHost" placeholder="smtp.gmail.com" />
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>SMTP Port</label>
+                            <input type="number" id="smtpPort" placeholder="587" />
+                        </div>
+                        <div class="form-group">
+                            <label>Encryption</label>
+                            <select id="smtpEncryption">
+                                <option value="tls">TLS</option>
+                                <option value="ssl">SSL</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>SMTP Username</label>
+                        <input type="text" id="smtpUsername" placeholder="your-email@gmail.com" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>SMTP Password</label>
+                        <input type="password" id="smtpPassword" placeholder="Enter password" />
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Payment Gateway</div>
+                            <div class="desc">Enable online payment processing</div>
+                        </div>
+                        <div class="toggle" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('integrations')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- ========================================
+                BACKUP & RECOVERY PANEL
+                ======================================== -->
+                <div class="panel-content" id="panel-backup" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Backup & Recovery</div>
+                        <div class="panel-subtitle">Manage system backups and data recovery</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div class="info">
+                            <div class="title">Automatic Backups</div>
+                            <div class="desc">Schedule daily automatic backups</div>
+                        </div>
+                        <div class="toggle active" onclick="toggleSwitch(this)">
+                            <div class="thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Backup Frequency</label>
+                        <select id="backupFrequency">
+                            <option value="daily" selected>Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Backup Time</label>
+                        <input type="time" id="backupTime" value="02:00" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Backup Location</label>
+                        <select id="backupLocation">
+                            <option value="cloud" selected>Cloud Storage</option>
+                            <option value="local">Local Server</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+                        <button class="btn-save" onclick="createBackup()">
+                            <i class="fas fa-database"></i> Backup Now
+                        </button>
+                        <button class="btn-danger" onclick="restoreBackup()">
+                            <i class="fas fa-undo"></i> Restore Backup
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 16px; padding: 12px; background: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 13px; color: var(--gray-500);">
+                            <strong>Last Backup:</strong> <span id="lastBackup">Oct 22, 2026 02:30 AM</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--gray-500);">
+                            <strong>Backup Size:</strong> <span id="backupSize">245 MB</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--gray-500);">
+                            <strong>Next Backup:</strong> <span id="nextBackup">Oct 23, 2026 02:00 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="danger-zone">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>
+                        <p>Reset all settings to default values. This action cannot be undone.</p>
+                        <button class="btn-danger" onclick="resetSettings()" style="padding: 8px 20px; font-size: 14px;">
+                            <i class="fas fa-undo"></i> Reset All Settings
+                        </button>
+                    </div>
+
+                    <button class="btn-save" onclick="saveSettings('backup')" style="margin-top: 16px;">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/sa_dashboard.js"></script>
+    <script>
+        // ========================================
+        // PANEL NAVIGATION
+        // ========================================
+
+        document.querySelectorAll('.settings-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Update active nav item
+                document.querySelectorAll('.settings-nav .nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+
+                // Show corresponding panel
+                const panelId = this.dataset.panel;
+                document.querySelectorAll('.panel-content').forEach(p => p.style.display = 'none');
+                document.getElementById('panel-' + panelId).style.display = 'block';
+            });
+        });
+
+        // ========================================
+        // TOGGLE SWITCH
+        // ========================================
+
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+        }
+
+        // ========================================
+        // SAVE SETTINGS
+        // ========================================
+
+        function saveSettings(section) {
+            const btn = document.querySelector(`#panel-${section} .btn-save`);
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('✅ Settings saved successfully!', 'success');
+            }, 1500);
+        }
+
+        // ========================================
+        // BACKUP FUNCTIONS
+        // ========================================
+
+        function createBackup() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating backup...';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('✅ Backup created successfully!', 'success');
+                document.getElementById('lastBackup').textContent = new Date().toLocaleString();
+            }, 2000);
+        }
+
+        function restoreBackup() {
+            if (!confirm('⚠️ Are you sure you want to restore from backup? This will overwrite current data.')) return;
+
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Restoring...';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('✅ Backup restored successfully!', 'success');
+            }, 3000);
+        }
+
+        function resetSettings() {
+            if (!confirm('⚠️ Are you sure you want to reset all settings to default? This cannot be undone.')) return;
+
+            showToast('🔄 Resetting all settings...', 'warning');
+
+            setTimeout(() => {
+                showToast('✅ All settings reset to default!', 'success');
+            }, 2000);
+        }
+
+        // ========================================
+        // LOAD SETTINGS FROM DATABASE
+        // ========================================
+
+        async function loadSettings() {
+            try {
+                // Try to load settings from API
+                const result = await apiRequest('/settings', 'GET');
+                
+                if (result.success && result.data) {
+                    const settings = result.data;
+                    console.log('📦 Loaded settings:', settings);
+                    
+                    // Populate fields with data
+                    // This is where you'd map settings to form fields
+                }
+            } catch (error) {
+                console.log('ℹ️ No settings found, using defaults');
+            }
+        }
+
+        // ========================================
+        // INITIALIZE
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!-- patient_myappointment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Appointments - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="./css/patient_dashboard.css" />
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <span>Smart Hospital</span>
+                <small>system</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+
+            <a href="patient_dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge" id="appointmentBadge">0</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="dropdown-menu" id="appointmentsMenu">
+                    <a href="patient_myappointment.html" data-page="appointments" class="active">
+                        <i class="fas fa-list"></i> My Appointments
+                        <span class="badge" id="myAppointmentBadge">0</span>
+                    </a>
+                    <a href="patient_new_appointment.html" data-page="book-appointment">
+                        <i class="fas fa-plus-circle"></i> New Appointment
+                    </a>
+                </div>
+            </div>
+
+            <a href="#" data-page="medical-records">
+                <i class="fas fa-file-medical-alt"></i> Medical Records
+            </a>
+
+            <a href="patient_prescription.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
+            </a>
+
+            <a href="#" data-page="health-analytics">
+                <i class="fas fa-chart-line"></i> Health Analytics
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">Settings</div>
+
+            <a href="patient_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge">3</span>
+            </a>
+
+            <a href="#" data-page="security">
+                <i class="fas fa-shield-alt"></i> Privacy & Security
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar" id="sidebarAvatar">SC</div>
+                <div class="user-info">
+                    <div class="name" id="sidebarName">Sabrina Carpenter</div>
+                    <div class="role">Patient</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>
+                    My Appointments
+                    <small>Manage your visits</small>
+                </h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search appointments..." id="searchInput" />
+                </div>
+                <div class="avatar-small" id="topbarAvatar">SC</div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingState" style="text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: var(--primary-light);"></i>
+            <p style="margin-top: 12px; color: var(--gray-500);">Loading appointments...</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs" style="display: none;">
+            <button class="filter-tab active" data-filter="all">
+                All <span class="count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="pending">
+                Upcoming <span class="count" id="countPending">0</span>
+            </button>
+            <button class="filter-tab" data-filter="confirmed">
+                Confirmed <span class="count" id="countConfirmed">0</span>
+            </button>
+            <button class="filter-tab" data-filter="workdone">
+                Completed <span class="count" id="countWorkdone">0</span>
+            </button>
+            <button class="filter-tab" data-filter="cancelled">
+                Cancelled <span class="count" id="countCancelled">0</span>
+            </button>
+        </div>
+
+        <!-- Appointments Container - WILL BE POPULATED BY JAVASCRIPT -->
+        <div class="appointments-container" id="appointmentsContainer" style="display: none;">
+            <!-- Appointments will be rendered dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-calendar-plus"></i>
+            <h3>No Appointments Found</h3>
+            <p>You don't have any appointments in this category.</p>
+            <a href="patient_new_appointment.html" style="display: inline-block; margin-top: 16px; background: var(--primary-light); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none;">
+                Book an Appointment
+            </a>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="./js/patient_dashboard.js"></script>
+    <script>
+        // ========================================
+        // FETCH APPOINTMENTS FROM API
+        // ========================================
+
+        async function fetchAppointments() {
+            try {
+                const loadingState = document.getElementById('loadingState');
+                const container = document.getElementById('appointmentsContainer');
+                const filterTabs = document.getElementById('filterTabs');
+                const emptyState = document.getElementById('emptyState');
+
+                // Show loading
+                loadingState.style.display = 'block';
+                container.style.display = 'none';
+                filterTabs.style.display = 'none';
+                emptyState.style.display = 'none';
+
+                // Fetch appointments from API
+                const result = await apiRequest('/appointments/patient/me', 'GET');
+
+                if (result.success && result.data) {
+                    const appointments = result.data;
+                    const counts = {
+                        all: appointments.length,
+                        pending: appointments.filter(a => a.status === 'pending').length,
+                        confirmed: appointments.filter(a => a.status === 'confirmed').length,
+                        cancelled: appointments.filter(a => a.status === 'cancelled').length,
+                    };
+
+                    // ✅ UPDATE BADGES DYNAMICALLY
+                    document.getElementById('appointmentBadge').textContent = counts.all;
+                    document.getElementById('myAppointmentBadge').textContent = counts.all;
+
+                    // ✅ UPDATE FILTER COUNTS
+                    document.getElementById('countAll').textContent = counts.all;
+                    document.getElementById('countPending').textContent = counts.pending;
+                    document.getElementById('countConfirmed').textContent = counts.confirmed;
+                    document.getElementById('countWorkdone').textContent = counts.workdone;
+                    document.getElementById('countCancelled').textContent = counts.cancelled;
+
+                    // ✅ RENDER APPOINTMENTS
+                    renderAppointments(appointments);
+
+                    // Show content
+                    loadingState.style.display = 'none';
+                    container.style.display = 'block';
+                    filterTabs.style.display = 'flex';
+
+                    if (appointments.length === 0) {
+                        emptyState.style.display = 'block';
+                        container.style.display = 'none';
+                    }
+
+                } else {
+                    throw new Error(result.message || 'Failed to fetch appointments');
+                }
+
+            } catch (error) {
+                console.error('Fetch appointments error:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                showToast('Failed to load appointments: ' + error.message, 'error');
+            }
+        }
+
+        // ========================================
+        // RENDER APPOINTMENTS DYNAMICALLY
+        // ========================================
+
+        function renderAppointments(appointments) {
+            const container = document.getElementById('appointmentsContainer');
+            container.innerHTML = '';
+
+            if (!appointments || appointments.length === 0) {
+                return;
+            }
+
+            appointments.forEach(appointment => {
+                const card = document.createElement('div');
+                card.className = `appointment-card ${appointment.status}`;
+                card.dataset.status = appointment.status;
+
+                // ✅ Get doctor name from the appointment data
+                const doctorName = appointment.doctor?.user 
+                    ? `Dr. ${appointment.doctor.user.firstName} ${appointment.doctor.user.lastName}`
+                    : 'Dr. Unknown';
+                const doctorSpecialty = appointment.doctor?.specialty || 'General Practitioner';
+
+                // ✅ Format date and time
+                const date = appointment.scheduledAt
+    ? new Date(appointment.scheduledAt)
+    : null;
+
+const formattedDate = date
+    ? date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    })
+    : 'Date not set';
+
+const formattedTime = date
+    ? date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    })
+    : 'Time not set';
+
+                // ✅ Status mapping
+                const statusMap = {
+                    'pending': 'Scheduled',
+                    'confirmed': 'Confirmed',
+                    'workdone': 'Completed',
+                    'cancelled': 'Cancelled'
+                };
+                const displayStatus = statusMap[appointment.status] || appointment.status;
+
+                // ✅ Icon mapping
+                const iconMap = {
+                    'pending': 'fa-calendar-check',
+                    'confirmed': 'fa-check-circle',
+                    'workdone': 'fa-check-double',
+                    'cancelled': 'fa-times-circle'
+                };
+                const icon = iconMap[appointment.status] || 'fa-calendar-alt';
+
+                // ✅ Appointment type display
+                const typeMap = {
+                    in_person_visit: 'In-Person Visit',
+                    virtual_consultation: 'Virtual Consultation',
+                    phone_consultation: 'Phone Consultation'
+                };
+
+                const appointmentType =
+                    typeMap[appointment.type] || appointment.type || 'Appointment';
+                card.innerHTML = `
+                    <div class="left">
+                        <div class="icon"><i class="fas ${icon}"></i></div>
+                        <div class="info">
+                            <div class="title">${appointmentType}</div>
+                            <div class="sub">${doctorName} · ${doctorSpecialty}</div>
+                            ${appointment.symptoms ? `<div style="font-size: 12px; color: var(--gray-400); margin-top: 2px;">${appointment.symptoms.substring(0, 80)}${appointment.symptoms.length > 80 ? '...' : ''}</div>` : ''}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge ${appointment.status}">${displayStatus}</span>
+                    </div>
+                    <div class="date">
+                        <span class="day">${formattedDate}</span>
+                        <span class="month">${formattedTime}</span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // ========================================
+        // FILTER FUNCTIONALITY
+        // ========================================
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                const cards = document.querySelectorAll('.appointment-card');
+                const emptyState = document.getElementById('emptyState');
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    if (filter === 'all' || card.dataset.status === filter) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                }
+            });
+        });
+
+        // ========================================
+        // SEARCH FUNCTIONALITY
+        // ========================================
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.appointment-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('.title')?.textContent?.toLowerCase() || '';
+                const sub = card.querySelector('.sub')?.textContent?.toLowerCase() || '';
+                const symptoms = card.querySelector('.info div:last-child')?.textContent?.toLowerCase() || '';
+
+                const match = title.includes(query) || sub.includes(query) || symptoms.includes(query);
+                card.style.display = (match && card.style.display !== 'none') ? 'flex' : 'none';
+            });
+        });
+
+        // ========================================
+        // LOAD APPOINTMENTS ON PAGE LOAD
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            fetchAppointments();
+        });
+    </script>
+</body>
+</html>
