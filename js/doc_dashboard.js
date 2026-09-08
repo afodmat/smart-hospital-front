@@ -1,14 +1,20 @@
-
-
-const API_BASE_URL = 'https://smart-hospital-fet1.onrender.com';
-const FRONTEND_URL = 'https://smart-hospitalsystem.netlify.app';
+const API_BASE_URL = 'http://localhost:5001';
+const FRONTEND_URL = 'http://localhost:5500';
 
 // AUTHENTICATION
 
-function redirectToLogin() {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("user");
-  window.location.href = "login.html";
+function checkAuth() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
 }
 
 function checkAuth() {
@@ -19,101 +25,53 @@ function checkAuth() {
   return true;
 }
 
-async function refreshAccessToken() {
-  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) return false;
-
-  const result = await response.json();
-  localStorage.setItem("access_token", result.accessToken);
-  localStorage.setItem("user", JSON.stringify(result.user));
-  return true;
-}
-
-async function apiRequest(endpoint, method = "GET", data = null, retried = false) {
-  const token = localStorage.getItem("access_token");
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    ...(data ? { body: JSON.stringify(data) } : {}),
-  });
-
-  const result = await response.json().catch(() => ({}));
-
-  if (response.status === 401 && !retried) {
-    const refreshed = await refreshAccessToken();
-
-    if (refreshed) {
-      return apiRequest(endpoint, method, data, true);
-    }
-
-    redirectToLogin();
-    throw new Error("Your session has expired. Please log in again.");
-  }
-
-  if (!response.ok) {
-    throw new Error(result.message || `Request failed (${response.status})`);
-  }
-
-  return result;
-}
-
 // API REQUEST
 
-// async function apiRequest(endpoint, method = 'GET', data = null) {
-//     const url = `${API_BASE_URL}${endpoint}`;
+async function apiRequest(endpoint, method = 'GET', data = null) {
+    const url = `${API_BASE_URL}${endpoint}`;
 
-//     const options = {
-//         method,
-//         credentials: 'include',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     };
+    const options = {
+        method,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
 
-//     const token = localStorage.getItem('access_token');
-//     if (token) {
-//         options.headers.Authorization = `Bearer ${token}`;
-//     }
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        options.headers.Authorization = `Bearer ${token}`;
+    }
 
-//     if (data) {
-//         options.body = JSON.stringify(data);
-//     }
+    if (data) {
+        options.body = JSON.stringify(data);
+    }
 
-//     try {
-//         const response = await fetch(url, options);
+    try {
+        const response = await fetch(url, options);
 
-//         const result = await response.json();
+        const result = await response.json();
 
-//         if (response.status === 401) {
-//             localStorage.removeItem('access_token');
-//             localStorage.removeItem('user');
-//             window.location.href = 'login.html';
-//             throw new Error('Authentication required. Please log in.');
-//         }
+        if (response.status === 401) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+            throw new Error('Authentication required. Please log in.');
+        }
 
-//         if (!response.ok) {
-//             throw new Error(
-//                 result.message || `HTTP error ${response.status}`
-//             );
-//         }
+        if (!response.ok) {
+            throw new Error(
+                result.message || `HTTP error ${response.status}`
+            );
+        }
 
-//         return result;
+        return result;
 
-//     } catch (error) {
-//         console.error('❌ API Error:', error);
-//         throw error;
-//     }
-// }
+    } catch (error) {
+        console.error('❌ API Error:', error);
+        throw error;
+    }
+}
 
 // ========================================
 // DOM REFERENCES
@@ -237,6 +195,276 @@ function handleLogout() {
 }
 
 if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+async function loadDoctorProfile() {
+    const result = await apiRequest("/doctors/me", "GET");
+
+    if (!result.success) {
+        throw new Error(result.message || "Could not load doctor profile");
+    }
+
+    const doctor = result.data;
+    const user = doctor.user || {};
+
+    const firstName = user.firstName || "";
+    const lastName = user.lastName || "";
+    const fullName = `Dr. ${firstName} ${lastName}`.trim() || "Doctor";
+    const initials = `${firstName[0] || ""}${lastName[0] || ""}` || "DR";
+
+    // Keep user details available for all doctor pages.
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+    localStorage.setItem("user", JSON.stringify({
+        ...savedUser,
+        ...user,
+        doctorId: doctor.id,
+        specialty: doctor.specialty || "",
+    }));
+
+    // Dashboard header and sidebar
+    const sidebarName = document.getElementById("sidebarName");
+    const sidebarAvatar = document.getElementById("sidebarAvatar");
+    const topbarAvatar = document.getElementById("topbarAvatar");
+    const sidebarRole = document.querySelector(".sidebar-footer .role");
+
+    if (sidebarName) sidebarName.textContent = fullName;
+    if (sidebarAvatar) sidebarAvatar.textContent = initials;
+    if (topbarAvatar) topbarAvatar.textContent = initials;
+    if (sidebarRole) sidebarRole.textContent = doctor.specialty || "Doctor";
+}
+
+function getAppointmentStatus(appointment) {
+    return String(appointment.status || "pending").toLowerCase();
+}
+
+function getPatientName(appointment) {
+    const user = appointment.patient?.user || {};
+
+    return `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown patient";
+}
+
+function isToday(dateValue) {
+    if (!dateValue) return false;
+
+    const date = new Date(dateValue);
+    const today = new Date();
+
+    return (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
+    );
+}
+
+function formatTime(dateValue) {
+    if (!dateValue) return "Time not set";
+
+    return new Date(dateValue).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
+function getCardByTitle(title) {
+    return [...document.querySelectorAll(".card")].find((card) =>
+        card.querySelector("h3")?.textContent.includes(title)
+    );
+}
+
+function createScheduleItem(appointment) {
+    const item = document.createElement("div");
+    item.className = "schedule-item";
+
+    const status = getAppointmentStatus(appointment);
+    const name = getPatientName(appointment);
+    const details = [
+        appointment.type || "Appointment",
+        appointment.symptoms,
+        status === "completed" ? "Completed" : null,
+    ].filter(Boolean).join(" · ");
+
+    const time = document.createElement("span");
+    time.className = "time";
+    time.textContent = formatTime(appointment.scheduledAt);
+
+    const statusDot = document.createElement("span");
+    statusDot.className = `status-dot ${status}`;
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    const patientName = document.createElement("div");
+    patientName.className = "name";
+    patientName.textContent = name;
+
+    const type = document.createElement("div");
+    type.className = "type";
+    type.textContent = details;
+
+    info.append(patientName, type);
+    item.append(time, statusDot, info);
+
+    return item;
+}
+
+function renderTodaySchedule(appointments) {
+    const scheduleCard = getCardByTitle("Today's Schedule");
+
+    if (!scheduleCard) return;
+
+    scheduleCard.querySelectorAll(".schedule-item").forEach((item) => item.remove());
+
+    const header = scheduleCard.querySelector(".card-header");
+
+    if (appointments.length === 0) {
+        const emptyItem = document.createElement("div");
+        emptyItem.className = "schedule-item";
+        emptyItem.textContent = "No appointments scheduled for today.";
+        header.after(emptyItem);
+        return;
+    }
+
+    [...appointments]
+        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
+        .reverse()
+        .forEach((appointment) => {
+            header.after(createScheduleItem(appointment));
+        });
+}
+
+function renderPatientQueue(appointments) {
+    const queueCard = getCardByTitle("Patient Queue");
+
+    if (!queueCard) return;
+
+    const waitingAppointments = appointments.filter((appointment) =>
+        ["pending", "confirmed", "scheduled"].includes(
+            getAppointmentStatus(appointment)
+        )
+    );
+
+    queueCard.querySelectorAll(".queue-item").forEach((item) => item.remove());
+
+    const queueCount = queueCard.querySelector(".card-header span");
+    if (queueCount) {
+        queueCount.textContent = `${waitingAppointments.length} patient${waitingAppointments.length === 1 ? "" : "s"} waiting`;
+    }
+
+    const header = queueCard.querySelector(".card-header");
+
+    if (waitingAppointments.length === 0) {
+        const emptyItem = document.createElement("div");
+        emptyItem.className = "queue-item";
+        emptyItem.textContent = "No patients are waiting.";
+        header.after(emptyItem);
+        return;
+    }
+
+    [...waitingAppointments].reverse().forEach((appointment) => {
+        const item = document.createElement("div");
+        item.className = "queue-item";
+
+        const left = document.createElement("div");
+        left.className = "left";
+
+        const priority = document.createElement("span");
+        priority.className = "priority";
+
+        const info = document.createElement("div");
+        info.className = "info";
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = getPatientName(appointment);
+
+        const details = document.createElement("div");
+        details.className = "details";
+        details.textContent = appointment.symptoms || appointment.type || "Appointment";
+
+        const waitingBadge = document.createElement("span");
+        waitingBadge.className = "triage-badge";
+        waitingBadge.textContent = "Waiting";
+        details.appendChild(waitingBadge);
+
+        info.append(name, details);
+        left.append(priority, info);
+
+        const right = document.createElement("div");
+        right.className = "right";
+
+        const waitTime = document.createElement("span");
+        waitTime.className = "wait-time";
+        waitTime.textContent = `⏱️ ${formatTime(appointment.scheduledAt)}`;
+
+        const startButton = document.createElement("button");
+        startButton.className = "start-btn";
+        startButton.textContent = "Start";
+        startButton.addEventListener("click", () => {
+            showToast(`Starting consultation with ${getPatientName(appointment)}`, "info");
+        });
+
+        right.append(waitTime, startButton);
+        item.append(left, right);
+
+        header.after(item);
+    });
+}
+
+function updateDashboardStats(todayAppointments) {
+    const waiting = todayAppointments.filter((appointment) =>
+        ["pending", "confirmed", "scheduled"].includes(
+            getAppointmentStatus(appointment)
+        )
+    ).length;
+
+    const completed = todayAppointments.filter(
+        (appointment) => getAppointmentStatus(appointment) === "completed"
+    ).length;
+
+    const statValues = [
+        todayAppointments.length,
+        waiting,
+        completed,
+        "—",
+    ];
+
+    document.querySelectorAll(".stat-card .number").forEach((element, index) => {
+        element.textContent = statValues[index];
+    });
+
+    const quickStats = {
+        "Total Patients Today": todayAppointments.length,
+        "Patients Seen": completed,
+        "Waiting": waiting,
+        "Average Duration": "—",
+    };
+
+    document.querySelectorAll(".quick-stat").forEach((row) => {
+        const label = row.querySelector(".label")?.textContent.trim();
+        const value = row.querySelector(".value");
+
+        if (value && Object.hasOwn(quickStats, label)) {
+            value.textContent = quickStats[label];
+        }
+    });
+}
+
+async function loadDoctorDashboard() {
+    const result = await apiRequest("/appointments/doctor/me", "GET");
+
+    if (!result.success) {
+        throw new Error(result.message || "Could not load appointments");
+    }
+
+    const appointments = result.data || [];
+    const todayAppointments = appointments.filter((appointment) =>
+        isToday(appointment.scheduledAt)
+    );
+
+    updateDashboardStats(todayAppointments);
+    renderPatientQueue(todayAppointments);
+    renderTodaySchedule(todayAppointments);
+}
 
 // ========================================
 // TOAST NOTIFICATIONS
@@ -537,18 +765,20 @@ function initSearch() {
 // INITIALIZATION
 // ========================================
 document.addEventListener("DOMContentLoaded", async () => {
-  if (!checkAuth()) return;
+    if (!checkAuth()) return;
 
-  loadUserData();
-  highlightActivePage();
-  initStatusToggle();
-  initSearch();
+    loadUserData();
+    highlightActivePage();
+    initStatusToggle();
+    initSearch();
 
-  try {
-    const response = await apiRequest("/doctors/me");
-    console.log("Doctor profile loaded:", response);
-  } catch (error) {
-    console.error("Failed to load doctor profile:", error);
-    showToast(error.message, "error");
-  }
+    try {
+        await Promise.all([
+            loadDoctorProfile(),
+            loadDoctorDashboard(),
+        ]);
+    } catch (error) {
+        console.error("Failed to load dashboard:", error);
+        showToast(error.message || "Failed to load dashboard data", "error");
+    }
 });
