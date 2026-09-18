@@ -42,7 +42,21 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     }
 
     try {
-        const response = await fetch(url, options);
+        let response;
+        let lastError;
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                response = await fetch(url, options);
+                break;
+            } catch (error) {
+                lastError = error;
+                if (method !== 'GET' || attempt === 3) throw error;
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            }
+        }
+
+        if (!response) throw lastError;
 
         const result = await response.json();
 
