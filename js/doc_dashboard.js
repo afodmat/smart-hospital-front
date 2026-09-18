@@ -19,8 +19,9 @@ async function checkAuth() {
     }
 
     try {
-        const result = await apiRequest('/auth/me', 'GET');
-        const user = result?.data?.user || result?.data || result?.user;
+        const result = await apiRequest('/doctors/me', 'GET');
+        const doctor = result?.data || result?.doctor;
+        const user = doctor?.user || result?.data?.user || result?.user;
         const role = String(user?.role || '').toUpperCase();
 
         if (!user || !['DOCTOR', 'ADMIN', 'SUPER_ADMIN'].includes(role)) {
@@ -73,7 +74,10 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     try {
         const response = await fetch(url, options);
 
-        const result = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const result = contentType.includes('application/json')
+            ? await response.json()
+            : {};
 
         if (response.status === 401) {
             localStorage.removeItem('access_token');
@@ -84,7 +88,7 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 
         if (!response.ok) {
             throw new Error(
-                result.message || `HTTP error ${response.status}`
+                result.message || `HTTP error ${response.status} from ${endpoint}`
             );
         }
 
