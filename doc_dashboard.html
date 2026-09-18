@@ -37,8 +37,7 @@
             <a href="doc_prescriptions.html" data-page="prescriptions">
                 <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
                 <span class="badge" id="prescriptionsSidebarBadge" style="display:none;">0</span>
-            </a>            
-            <a href="doc_medicalrecords.html" data-page="medical-records"><i class="fas fa-notes-medical"></i> Medical Records</a>
+            </a>            <a href="doc_medicalrecords.html" data-page="medical-records"><i class="fas fa-notes-medical"></i> Medical Records</a>
 
             <div class="menu-label" style="margin-top: 16px;">Settings</div>
             <a href="doc_profile.html" data-page="profile"><i class="fas fa-user-cog"></i> Profile</a>
@@ -139,12 +138,23 @@
 
                 <div class="card" style="background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white;">
                     <div style="text-align: center; padding: 8px 0;">
-                        <div id="todaySummary" style="font-size: 32px; font-weight: 700;">0/0</div>
+                        <div id="patientsSeenToday" style="font-size: 32px; font-weight: 700;">0</div>
                         <div style="font-size: 14px; opacity: 0.7;">Patients Seen Today</div>
+
                         <div style="margin-top: 16px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 13px;"><span>⏱️ Next Patient</span><span id="nextPatientName" style="font-weight: 600;">No patient waiting</span></div>
+                            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                                <span>⏱️ Next Patient</span>
+                                <span id="nextPatientName" style="font-weight: 600;">No patient waiting</span>
+                            </div>
                         </div>
-                        <button id="startNextButton" type="button" style="margin-top: 16px; padding: 10px 30px; border: none; border-radius: 8px; background: var(--accent); color: var(--gray-900); font-weight: 600; cursor: pointer; transition: var(--transition); font-size: 14px;"><i class="fas fa-play"></i> Start Next Consultation</button>
+
+                        <a href="doc_allappointments.html"
+                        id="startNextButton"
+                        style="display: inline-block; margin-top: 16px; padding: 10px 30px; border: none; border-radius: 8px;
+                                background: var(--accent); color: var(--gray-900); font-weight: 600;
+                                cursor: pointer; transition: var(--transition); font-size: 14px; text-decoration: none;">
+                            <i class="fas fa-play"></i> Start Next Consultation
+                        </a>
                     </div>
                 </div>
             </div>

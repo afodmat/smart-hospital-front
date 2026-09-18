@@ -325,105 +325,156 @@ function createScheduleItem(appointment) {
 
 function renderTodaySchedule(appointments) {
     const scheduleCard = getCardByTitle("Today's Schedule");
-
     if (!scheduleCard) return;
 
-    scheduleCard.querySelectorAll(".schedule-item").forEach((item) => item.remove());
+    scheduleCard.querySelectorAll(".schedule-item, .queue-item").forEach((el) => el.remove());
 
     const header = scheduleCard.querySelector(".card-header");
 
-    if (appointments.length === 0) {
-        const emptyItem = document.createElement("div");
-        emptyItem.className = "schedule-item";
-        emptyItem.textContent = "No appointments scheduled for today.";
-        header.after(emptyItem);
+    // Sort by time, earliest first
+    const sorted = [...appointments].sort(
+        (a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt)
+    );
+
+    if (sorted.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "schedule-item";
+        empty.textContent = "No appointments scheduled for today.";
+        header.after(empty);
         return;
     }
 
-    [...appointments]
-        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
-        .reverse()
-        .forEach((appointment) => {
-            header.after(createScheduleItem(appointment));
-        });
+    sorted.forEach((appointment) => {
+        const item = document.createElement("div");
+        item.className = "schedule-item";
+
+        const time = document.createElement("span");
+        time.className = "time";
+        time.textContent = formatTime(appointment.scheduledAt);
+
+        const statusDot = document.createElement("span");
+        statusDot.className = `status-dot ${getAppointmentStatus(appointment)}`;
+
+        const info = document.createElement("div");
+        info.className = "info";
+
+        const title = document.createElement("div");
+        title.className = "name";
+        title.textContent = `Appointment for ${getPatientName(appointment)}`;
+
+        const type = document.createElement("div");
+        type.className = "type";
+        type.textContent = getAppointmentType(appointment);
+
+        info.append(title, type);
+        item.append(time, statusDot, info);
+
+        header.after(item);
+    });
+}
+
+function countPrescriptionsToday(prescriptions) {
+    return prescriptions.filter((p) => isToday(p.createdAt)).length;
+}
+
+function renderPatientsSeenToday(prescriptions) {
+    const el = document.getElementById("patientsSeenToday");
+    if (el) el.textContent = countPrescriptionsToday(prescriptions);
+}
+
+function renderNextPatient(todayAppointments) {
+    const el = document.getElementById("nextPatientName");
+    if (!el) return;
+
+    const next = [...todayAppointments]
+        .filter((a) =>
+            ["pending", "confirmed", "scheduled"].includes(getAppointmentStatus(a))
+        )
+        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))[0];
+
+    el.textContent = next
+        ? `${getPatientName(next)} · ${formatTime(next.scheduledAt)}`
+        : "No patient waiting";
 }
 
 function renderPatientQueue(appointments) {
     const queueCard = getCardByTitle("Patient Queue");
-
     if (!queueCard) return;
 
-    const waitingAppointments = appointments.filter((appointment) =>
-        ["pending", "confirmed", "scheduled"].includes(
-            getAppointmentStatus(appointment)
-        )
+    // Today's queue = still-active statuses
+    const waitingAppointments = appointments.filter((a) =>
+        ["pending", "confirmed", "scheduled"].includes(getAppointmentStatus(a))
     );
 
-    queueCard.querySelectorAll(".queue-item").forEach((item) => item.remove());
+    // Clean out old items
+    queueCard.querySelectorAll(".queue-item, .schedule-item").forEach((el) => el.remove());
 
-    const queueCount = queueCard.querySelector(".card-header span");
+    // Update count in the header
+    const queueCount =
+        document.getElementById("queueCount") ||
+        queueCard.querySelector(".card-header span");
     if (queueCount) {
-        queueCount.textContent = `${waitingAppointments.length} patient${waitingAppointments.length === 1 ? "" : "s"} waiting`;
+        queueCount.textContent = `${waitingAppointments.length} patient${
+            waitingAppointments.length === 1 ? "" : "s"
+        } waiting`;
     }
 
     const header = queueCard.querySelector(".card-header");
 
     if (waitingAppointments.length === 0) {
-        const emptyItem = document.createElement("div");
-        emptyItem.className = "queue-item";
-        emptyItem.textContent = "No patients are waiting.";
-        header.after(emptyItem);
+        const empty = document.createElement("div");
+        empty.className = "schedule-item";
+        empty.textContent = "No patients waiting today.";
+        header.after(empty);
         return;
     }
 
-    [...waitingAppointments].reverse().forEach((appointment) => {
-        const item = document.createElement("div");
-        item.className = "queue-item";
+    // Sort by scheduled time (earliest first)
+    [...waitingAppointments]
+        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
+        .forEach((appointment) => {
+            const item = document.createElement("div");
+            item.className = "queue-item";
 
-        const left = document.createElement("div");
-        left.className = "left";
+            const left = document.createElement("div");
+            left.className = "left";
 
-        const priority = document.createElement("span");
-        priority.className = "priority";
+            const priority = document.createElement("span");
+            priority.className = "priority";
 
-        const info = document.createElement("div");
-        info.className = "info";
+            const info = document.createElement("div");
+            info.className = "info";
 
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = getPatientName(appointment);
+            const name = document.createElement("div");
+            name.className = "name";
+            name.textContent = getPatientName(appointment);
 
-        const details = document.createElement("div");
-        details.className = "details";
-        details.textContent = appointment.symptoms || appointment.type || "Appointment";
+            const details = document.createElement("div");
+            details.className = "details";
+            details.textContent = getAppointmentType(appointment);
 
-        const waitingBadge = document.createElement("span");
-        waitingBadge.className = "triage-badge";
-        waitingBadge.textContent = "Waiting";
-        details.appendChild(waitingBadge);
+            info.append(name, details);
+            left.append(priority, info);
 
-        info.append(name, details);
-        left.append(priority, info);
+            const right = document.createElement("div");
+            right.className = "right";
 
-        const right = document.createElement("div");
-        right.className = "right";
+            const waitTime = document.createElement("span");
+            waitTime.className = "wait-time";
+            waitTime.textContent = `⏱️ ${formatTime(appointment.scheduledAt)}`;
 
-        const waitTime = document.createElement("span");
-        waitTime.className = "wait-time";
-        waitTime.textContent = `⏱️ ${formatTime(appointment.scheduledAt)}`;
+            const startButton = document.createElement("button");
+            startButton.className = "start-btn";
+            startButton.textContent = "Start";
+            startButton.addEventListener("click", () => {
+                window.location.href = "doc_allappointments.html";
+            });
 
-        const startButton = document.createElement("button");
-        startButton.className = "start-btn";
-        startButton.textContent = "Start";
-        startButton.addEventListener("click", () => {
-            showToast(`Starting consultation with ${getPatientName(appointment)}`, "info");
+            right.append(waitTime, startButton);
+            item.append(left, right);
+
+            header.after(item);
         });
-
-        right.append(waitTime, startButton);
-        item.append(left, right);
-
-        header.after(item);
-    });
 }
 
 function updateDashboardStats(appointments, prescriptions) {
@@ -436,7 +487,7 @@ function updateDashboardStats(appointments, prescriptions) {
     setText("statTotalAppointments", appointments.length);
     setText("statTotalPrescriptions", prescriptions.length);
 
-    // Quick Stats
+    // Quick stats
     setText("quickTotalAppointments", appointments.length);
     setText("quickTotalPrescriptions", prescriptions.length);
 
@@ -468,18 +519,24 @@ async function loadDoctorDashboard() {
     }
 
     const appointments = result.data || [];
-    const todayAppointments = appointments.filter((a) =>
-        isToday(a.scheduledAt)
-    );
+    const todayAppointments = appointments.filter((a) => isToday(a.scheduledAt));
 
     const prescriptions = await loadDoctorPrescriptions();
 
-    // Stats — all-time counts
+    // Stats (all-time)
     updateDashboardStats(appointments, prescriptions);
 
-    // Lists — still scoped to today (queue + schedule widgets)
+    // Today-only widgets
     renderPatientQueue(todayAppointments);
     renderTodaySchedule(todayAppointments);
+
+    // Blue card widgets
+    renderPatientsSeenToday(prescriptions);
+    renderNextPatient(todayAppointments);
+}
+
+function getAppointmentType(appointment) {
+    return appointment.type || appointment.symptoms || 'General Consultation';
 }
 // ========================================
 // TOAST NOTIFICATIONS
