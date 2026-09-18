@@ -299,9 +299,18 @@
             btn.disabled = true;
 
             try {
-                
+                const patientResult = await apiRequest('/patients/me', 'GET');
+                const patient = patientResult.data?.patient
+                    || patientResult.data
+                    || patientResult.patient;
+                const patientId = Number(patient?.id);
+
+                if (!patientId) {
+                    throw new Error('Your patient profile could not be found. Please complete your profile before booking.');
+                }
 
                 const appointmentData = {
+                    patientId,
                     doctorId: selectedDoctorId,
                     type: type,
                     symptoms: symptoms,
