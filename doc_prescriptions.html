@@ -300,6 +300,12 @@
             allPrescriptions = result.data || [];
             renderPrescriptions();
         } catch (err) {
+            if (err.message.includes('HTTP error 404')) {
+                allPrescriptions = [];
+                renderPrescriptions();
+                return;
+            }
+
             console.error('Failed to load prescriptions:', err);
             showToast(err.message || 'Failed to load prescriptions', 'error');
         }

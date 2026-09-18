@@ -661,7 +661,9 @@ async function loadDoctorPrescriptions() {
         const result = await apiRequest('/prescriptions/doctor/me', 'GET');
         return result.data || [];
     } catch (error) {
-        console.error('Failed to load prescriptions:', error);
+        if (!error.message.includes('HTTP error 404')) {
+            console.error('Failed to load prescriptions:', error);
+        }
         return []; // Don't break the dashboard if this fails
     }
 }
