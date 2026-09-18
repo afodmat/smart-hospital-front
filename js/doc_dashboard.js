@@ -657,15 +657,7 @@ function initSearch() {
 }
 
 async function loadDoctorPrescriptions() {
-    try {
-        const result = await apiRequest('/prescriptions/doctor/me', 'GET');
-        return result.data || [];
-    } catch (error) {
-        if (!error.message.includes('HTTP error 404')) {
-            console.error('Failed to load prescriptions:', error);
-        }
-        return []; // Don't break the dashboard if this fails
-    }
+    return [];
 }
 
 // const DOCTOR_API_BASE_URL = 'http://localhost:5001';

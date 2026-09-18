@@ -294,21 +294,8 @@
 
     /* ---------- data load ---------- */
     async function loadPrescriptions() {
-        try {
-            // Uses GET /prescriptions/doctor/me
-            const result = await apiRequest(`${PRESCRIPTION_API}/doctor/me`, 'GET');
-            allPrescriptions = result.data || [];
-            renderPrescriptions();
-        } catch (err) {
-            if (err.message.includes('HTTP error 404')) {
-                allPrescriptions = [];
-                renderPrescriptions();
-                return;
-            }
-
-            console.error('Failed to load prescriptions:', err);
-            showToast(err.message || 'Failed to load prescriptions', 'error');
-        }
+        allPrescriptions = [];
+        renderPrescriptions();
     }
 
     async function loadPatients() {
