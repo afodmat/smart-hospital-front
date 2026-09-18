@@ -57,7 +57,6 @@
 
             <a href="doc_prescriptions.html" data-page="prescriptions" class="active">
                 <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
-                <span class="badge">3</span>
             </a>
 
             <a href="doc_medicalrecords.html" data-page="medical-records">
@@ -111,124 +110,349 @@
             </div>
         </header>
 
-        <!-- Filter Tabs -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">All <span class="count">5</span></button>
-            <button class="filter-tab" data-filter="active">Active <span class="count">2</span></button>
-            <button class="filter-tab" data-filter="completed">Completed <span class="count">2</span></button>
-            <button class="filter-tab" data-filter="expired">Expired <span class="count">1</span></button>
+        <!-- Toolbar -->
+        <div class="prescription-toolbar">
+            <span class="prescription-toolbar__count" id="prescriptionCount">0 prescriptions</span>
+            <button class="btn-primary" id="newPrescriptionBtn">
+                <i class="fas fa-plus"></i> New Prescription
+            </button>
         </div>
 
-        <!-- Prescription Cards -->
-        <div class="prescription-card active">
-            <div class="header">
-                <div class="left">
-                    <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
-                    <div class="info">
-                        <div class="name">Lisinopril</div>
-                        <div class="meta">
-                            <span><i class="fas fa-user"></i> John Smith</span>
-                            <span><i class="fas fa-calendar-alt"></i> Oct 22, 2026</span>
-                        </div>
-                    </div>
-                </div>
-                <span class="status-badge active">Active</span>
-            </div>
-            <div class="body">
-                <div class="detail"><span class="label">Dosage</span><span class="value">10mg once daily</span></div>
-                <div class="detail"><span class="label">Quantity</span><span class="value">30 tablets</span></div>
-                <div class="detail"><span class="label">Instructions</span><span class="value">Take with water, morning</span></div>
-                <div class="detail"><span class="label">Refills</span><span class="value">3 remaining</span></div>
-            </div>
-            <div class="footer">
-                <span class="refills">💊 <span>3</span> refills remaining</span>
-                <div class="actions">
-                    <button class="btn-refill" onclick="showToast('Refill requested for Lisinopril', 'success')">Request Refill</button>
-                    <button class="btn-details" onclick="showToast('Opening Lisinopril details...', 'info')">Details</button>
-                </div>
-            </div>
-        </div>
+        <!-- Dynamic list -->
+        <div id="prescriptionsList"></div>
 
-        <div class="prescription-card active">
-            <div class="header">
-                <div class="left">
-                    <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
-                    <div class="info">
-                        <div class="name">Albuterol Inhaler</div>
-                        <div class="meta">
-                            <span><i class="fas fa-user"></i> Sarah Johnson</span>
-                            <span><i class="fas fa-calendar-alt"></i> Nov 5, 2026</span>
-                        </div>
-                    </div>
-                </div>
-                <span class="status-badge active">Active</span>
-            </div>
-            <div class="body">
-                <div class="detail"><span class="label">Dosage</span><span class="value">90mcg 2 puffs as needed</span></div>
-                <div class="detail"><span class="label">Quantity</span><span class="value">1 inhaler (200 puffs)</span></div>
-                <div class="detail"><span class="label">Instructions</span><span class="value">Use as needed for shortness of breath</span></div>
-                <div class="detail"><span class="label">Refills</span><span class="value">2 remaining</span></div>
-            </div>
-            <div class="footer">
-                <span class="refills">💊 <span>2</span> refills remaining</span>
-                <div class="actions">
-                    <button class="btn-refill" onclick="showToast('Refill requested for Albuterol', 'success')">Request Refill</button>
-                    <button class="btn-details" onclick="showToast('Opening Albuterol details...', 'info')">Details</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="prescription-card completed">
-            <div class="header">
-                <div class="left">
-                    <div class="icon completed"><i class="fas fa-prescription-bottle-alt"></i></div>
-                    <div class="info">
-                        <div class="name">Metformin</div>
-                        <div class="meta">
-                            <span><i class="fas fa-user"></i> Michael Chen</span>
-                            <span><i class="fas fa-calendar-alt"></i> Aug 15, 2026</span>
-                        </div>
-                    </div>
-                </div>
-                <span class="status-badge completed">Completed</span>
-            </div>
-            <div class="body">
-                <div class="detail"><span class="label">Dosage</span><span class="value">500mg twice daily</span></div>
-                <div class="detail"><span class="label">Quantity</span><span class="value">60 tablets</span></div>
-                <div class="detail"><span class="label">Instructions</span><span class="value">Take with meals</span></div>
-                <div class="detail"><span class="label">Refills</span><span class="value">0 remaining</span></div>
-            </div>
-            <div class="footer">
-                <span class="refills">✅ Completed on Nov 1, 2026</span>
-                <div class="actions">
-                    <button class="btn-details" onclick="showToast('Opening Metformin details...', 'info')">Details</button>
-                </div>
-            </div>
+        <!-- Empty state -->
+        <div id="prescriptionsEmpty" class="prescriptions-empty" style="display:none;">
+            <i class="fas fa-prescription-bottle-alt"></i>
+            <p>No prescriptions yet.</p>
+            <button class="btn-primary" onclick="openPrescriptionModal()">
+                <i class="fas fa-plus"></i> Create your first prescription
+            </button>
         </div>
     </main>
+
+    <!-- ============ MODAL ============ -->
+    <div class="modal-overlay" id="prescriptionModal">
+        <div class="modal">
+            <div class="modal__header">
+                <h2 id="modalTitle">New Prescription</h2>
+                <button class="modal__close" id="closeModalBtn" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="prescriptionForm" class="modal__body">
+                <input type="hidden" id="editingId" />
+
+                <div class="form-group">
+                    <label for="patientSelect">Patient</label>
+                    <select id="patientSelect" required>
+                        <option value="">Loading patients...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicationsInput">Medications</label>
+                    <textarea id="medicationsInput" rows="3" required
+                        placeholder="e.g. Lisinopril 10mg once daily, 30 tablets"></textarea>
+                    <small>Include drug name, dosage, frequency and quantity.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="instructionsInput">Instructions</label>
+                    <textarea id="instructionsInput" rows="3"
+                        placeholder="e.g. Take with water in the morning"></textarea>
+                </div>
+
+                <div class="modal__footer">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save Prescription
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="./js/doc_dashboard.js"></script>
 
     <script>
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+    /* ============================================================
+       Prescriptions page — wired to existing /prescriptions API
+       ============================================================ */
 
-                const filter = this.dataset.filter;
-                const cards = document.querySelectorAll('.prescription-card');
+    const PRESCRIPTION_API = '/prescriptions';
 
-                cards.forEach(card => {
-                    if (filter === 'all' || card.classList.contains(filter)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
+    let allPrescriptions = [];
+    let patientCache = [];
+
+    const $ = (sel) => document.querySelector(sel);
+
+    /* ---------- helpers ---------- */
+    function getPatientName(p) {
+        const u = p?.patient?.user || {};
+        return `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown patient';
+    }
+
+    function getDoctorName(p) {
+        const u = p?.doctor?.user || {};
+        const full = `${u.firstName || ''} ${u.lastName || ''}`.trim();
+        return full ? `Dr. ${full}` : 'Unknown doctor';
+    }
+
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
         });
+    }
+
+    function escapeHtml(str) {
+        return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    /* ---------- render ---------- */
+    function renderPrescriptions() {
+        const list = $('#prescriptionsList');
+        const empty = $('#prescriptionsEmpty');
+        const countEl = $('#prescriptionCount');
+        if (!list) return;
+
+        const query = ($('#searchInput')?.value || '').toLowerCase().trim();
+
+        const filtered = allPrescriptions.filter((p) => {
+            if (!query) return true;
+            return (
+                (p.medications || '').toLowerCase().includes(query) ||
+                (p.instructions || '').toLowerCase().includes(query) ||
+                getPatientName(p).toLowerCase().includes(query)
+            );
+        });
+
+        if (countEl) {
+            countEl.textContent = `${filtered.length} prescription${filtered.length === 1 ? '' : 's'}`;
+        }
+
+        if (!filtered.length) {
+            list.innerHTML = '';
+            if (empty) empty.style.display = allPrescriptions.length ? 'none' : 'block';
+            return;
+        }
+        if (empty) empty.style.display = 'none';
+
+        list.innerHTML = filtered.map(renderCard).join('');
+    }
+
+    function renderCard(p) {
+        return `
+        <div class="prescription-card">
+            <div class="header">
+                <div class="left">
+                    <div class="icon active">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                    </div>
+                    <div class="info">
+                        <div class="name">${escapeHtml(getPatientName(p))}</div>
+                        <div class="meta">
+                            <span><i class="fas fa-user-md"></i> ${escapeHtml(getDoctorName(p))}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${fmtDate(p.createdAt)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="body">
+                <div class="detail">
+                    <span class="label">Medications</span>
+                    <span class="value">${escapeHtml(p.medications || '—')}</span>
+                </div>
+                <div class="detail">
+                    <span class="label">Instructions</span>
+                    <span class="value">${escapeHtml(p.instructions || '—')}</span>
+                </div>
+            </div>
+
+            <div class="footer">
+                <span class="refills">🆔 Prescription #${p.id}</span>
+                <div class="actions">
+                    <button class="btn-refill" onclick="editPrescription(${p.id})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn-details" onclick="deletePrescription(${p.id})"
+                        style="background:#fee2e2;color:#b91c1c;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    /* ---------- data load ---------- */
+    async function loadPrescriptions() {
+        try {
+            // Uses GET /prescriptions/doctor/me
+            const result = await apiRequest(`${PRESCRIPTION_API}/doctor/me`, 'GET');
+            allPrescriptions = result.data || [];
+            renderPrescriptions();
+        } catch (err) {
+            console.error('Failed to load prescriptions:', err);
+            showToast(err.message || 'Failed to load prescriptions', 'error');
+        }
+    }
+
+    async function loadPatients() {
+        try {
+            // Pull unique patients from the doctor's appointments
+            const result = await apiRequest('/appointments/doctor/me', 'GET');
+            const appointments = result.data || [];
+            const unique = new Map();
+
+            appointments.forEach((a) => {
+                if (a.patient && a.patient.id) unique.set(a.patient.id, a.patient);
+            });
+            patientCache = [...unique.values()];
+
+            const select = $('#patientSelect');
+            if (!select) return;
+
+            if (!patientCache.length) {
+                select.innerHTML = `<option value="">No patients found</option>`;
+                return;
+            }
+
+            select.innerHTML =
+                `<option value="">Select a patient...</option>` +
+                patientCache.map((pt) => {
+                    const u = pt.user || {};
+                    const name =
+                        `${u.firstName || ''} ${u.lastName || ''}`.trim() ||
+                        `Patient #${pt.id}`;
+                    return `<option value="${pt.id}">${escapeHtml(name)}</option>`;
+                }).join('');
+        } catch (err) {
+            console.error('Failed to load patients:', err);
+            showToast('Could not load patients', 'error');
+        }
+    }
+
+    /* ---------- modal ---------- */
+    function openPrescriptionModal() {
+        $('#editingId').value = '';
+        $('#modalTitle').textContent = 'New Prescription';
+        $('#prescriptionForm').reset();
+        $('#patientSelect').disabled = false;
+        $('#prescriptionModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        loadPatients();
+    }
+
+    function closePrescriptionModal() {
+        $('#prescriptionModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function editPrescription(id) {
+        const p = allPrescriptions.find((x) => x.id === id);
+        if (!p) return;
+
+        $('#editingId').value = p.id;
+        $('#modalTitle').textContent = `Edit Prescription #${p.id}`;
+        $('#medicationsInput').value = p.medications || '';
+        $('#instructionsInput').value = p.instructions || '';
+
+        // Patient can't be changed on update (validator only allows meds + instructions)
+        $('#patientSelect').disabled = true;
+        $('#patientSelect').innerHTML =
+            `<option selected>${escapeHtml(getPatientName(p))}</option>`;
+
+        $('#prescriptionModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /* ---------- submit ---------- */
+    async function submitPrescription(e) {
+        e.preventDefault();
+
+        const editingId = $('#editingId').value;
+        const medications = $('#medicationsInput').value.trim();
+        const instructions = $('#instructionsInput').value.trim();
+
+        if (!medications) {
+            return showToast('Medications are required', 'error');
+        }
+
+        try {
+            if (editingId) {
+                // UPDATE — PUT /prescriptions/:id  { medications, instructions }
+                await apiRequest(`${PRESCRIPTION_API}/${editingId}`, 'PUT', {
+                    medications,
+                    instructions
+                });
+                showToast('Prescription updated', 'success');
+            } else {
+                // CREATE — POST /prescriptions  { patientId, medications, instructions }
+                const patientId = Number($('#patientSelect').value);
+                if (!patientId) return showToast('Please select a patient', 'error');
+
+                await apiRequest(PRESCRIPTION_API, 'POST', {
+                    patientId,
+                    medications,
+                    instructions
+                });
+                showToast('Prescription created', 'success');
+            }
+
+            closePrescriptionModal();
+            await loadPrescriptions();
+        } catch (err) {
+            showToast(err.message || 'Save failed', 'error');
+        }
+    }
+
+    /* ---------- delete (soft-delete on backend) ---------- */
+    async function deletePrescription(id) {
+        if (!confirm('Delete this prescription?')) return;
+        try {
+            await apiRequest(`${PRESCRIPTION_API}/${id}`, 'DELETE');
+            showToast('Prescription deleted', 'success');
+            await loadPrescriptions();
+        } catch (err) {
+            showToast(err.message || 'Delete failed', 'error');
+        }
+    }
+
+    /* ---------- init ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+        // Search
+        const search = $('#searchInput');
+        if (search) search.addEventListener('input', renderPrescriptions);
+
+        // Modal wiring
+        $('#newPrescriptionBtn')?.addEventListener('click', openPrescriptionModal);
+        $('#closeModalBtn')?.addEventListener('click', closePrescriptionModal);
+        $('#cancelBtn')?.addEventListener('click', closePrescriptionModal);
+        $('#prescriptionForm')?.addEventListener('submit', submitPrescription);
+
+        $('#prescriptionModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'prescriptionModal') closePrescriptionModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePrescriptionModal();
+        });
+
+        // Load
+        loadPrescriptions();
+    });
+
+    /* expose for inline onclick */
+    window.editPrescription = editPrescription;
+    window.deletePrescription = deletePrescription;
+    window.openPrescriptionModal = openPrescriptionModal;
     </script>
 </body>
 </html>

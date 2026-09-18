@@ -37,11 +37,11 @@
                     <span class="arrow"><i class="fas fa-chevron-down"></i></span>
                 </button>
                 <div class="dropdown-menu" id="appointmentsMenu">
-                    <a href="appointments.html" data-page="appointments">
+                    <a href="patient_myappointment.html" data-page="appointments">
                         <i class="fas fa-list"></i> My Appointments
                         <span class="badge">4</span>
                     </a>
-                    <a href="book-appointment.html" data-page="book-appointment">
+                    <a href="patient_new_appointment.html" data-page="book-appointment">
                         <i class="fas fa-plus-circle"></i> New Appointment
                     </a>
                 </div>
@@ -51,7 +51,7 @@
                 <i class="fas fa-file-medical-alt"></i> Medical Records
             </a>
 
-            <a href="prescriptions.html" data-page="prescriptions" class="active">
+            <a href="patient_prescriptions.html" data-page="prescriptions" class="active">
                 <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
             </a>
 
@@ -110,248 +110,24 @@
             </div>
         </header>
 
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filterTabs">
-            <button class="filter-tab active" data-filter="all">
-                All <span class="count" id="countAll">5</span>
-            </button>
-            <button class="filter-tab" data-filter="active">
-                Active <span class="count" id="countActive">2</span>
-            </button>
-            <button class="filter-tab" data-filter="completed">
-                Completed <span class="count" id="countCompleted">2</span>
-            </button>
-            <button class="filter-tab" data-filter="expired">
-                Expired <span class="count" id="countExpired">1</span>
-            </button>
+        <!-- Toolbar -->
+        <div class="prescription-toolbar">
+            <span class="prescription-toolbar__count" id="prescriptionCount">Loading...</span>
+            <a href="patient_new_appointment.html" class="btn-primary">
+                <i class="fas fa-calendar-plus"></i> Book Appointment
+            </a>
         </div>
 
-        <!-- Prescriptions Container -->
-        <div class="prescriptions-container" id="prescriptionsContainer">
-            <!-- Active Prescription -->
-            <div class="prescription-card active">
-                <div class="header">
-                    <div class="left">
-                        <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
-                        <div class="info">
-                            <div class="name">Lisinopril</div>
-                            <div class="meta">
-                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
-                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Oct 22, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="status-badge active">Active</span>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="detail">
-                        <div class="label">Dosage</div>
-                        <div class="value"><span class="dosage">10mg</span> once daily</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Quantity</div>
-                        <div class="value">30 tablets</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Instructions</div>
-                        <div class="value">Take with water, preferably in the morning</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Refills</div>
-                        <div class="value">3 refills remaining</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="refills">💊 <span>3</span> refills remaining</div>
-                    <div class="actions">
-                        <button class="btn-refill">Request Refill</button>
-                        <button class="btn-details">View Details</button>
-                    </div>
-                </div>
-            </div>
+        <!-- Dynamic list -->
+        <div class="prescriptions-container" id="prescriptionsContainer"></div>
 
-            <!-- Active Prescription -->
-            <div class="prescription-card active">
-                <div class="header">
-                    <div class="left">
-                        <div class="icon active"><i class="fas fa-prescription-bottle-alt"></i></div>
-                        <div class="info">
-                            <div class="name">Albuterol Inhaler</div>
-                            <div class="meta">
-                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
-                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Nov 5, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="status-badge active">Active</span>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="detail">
-                        <div class="label">Dosage</div>
-                        <div class="value"><span class="dosage">90mcg</span> 2 puffs as needed</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Quantity</div>
-                        <div class="value">1 inhaler (200 puffs)</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Instructions</div>
-                        <div class="value">Use as needed for shortness of breath</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Refills</div>
-                        <div class="value">2 refills remaining</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="refills">💊 <span>2</span> refills remaining</div>
-                    <div class="actions">
-                        <button class="btn-refill">Request Refill</button>
-                        <button class="btn-details">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completed Prescription -->
-            <div class="prescription-card completed">
-                <div class="header">
-                    <div class="left">
-                        <div class="icon completed"><i class="fas fa-prescription-bottle-alt"></i></div>
-                        <div class="info">
-                            <div class="name">Metformin</div>
-                            <div class="meta">
-                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
-                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Aug 15, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="status-badge completed">Completed</span>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="detail">
-                        <div class="label">Dosage</div>
-                        <div class="value"><span class="dosage">500mg</span> twice daily</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Quantity</div>
-                        <div class="value">60 tablets</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Instructions</div>
-                        <div class="value">Take with meals</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Refills</div>
-                        <div class="value">0 refills remaining</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="refills">✅ Completed on Nov 1, 2026</div>
-                    <div class="actions">
-                        <button class="btn-details">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completed Prescription -->
-            <div class="prescription-card completed">
-                <div class="header">
-                    <div class="left">
-                        <div class="icon completed"><i class="fas fa-prescription-bottle-alt"></i></div>
-                        <div class="info">
-                            <div class="name">Amoxicillin</div>
-                            <div class="meta">
-                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
-                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Sep 10, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="status-badge completed">Completed</span>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="detail">
-                        <div class="label">Dosage</div>
-                        <div class="value"><span class="dosage">500mg</span> 3 times daily</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Quantity</div>
-                        <div class="value">21 capsules</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Instructions</div>
-                        <div class="value">Take with food, complete full course</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Refills</div>
-                        <div class="value">0 refills remaining</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="refills">✅ Completed on Sep 25, 2026</div>
-                    <div class="actions">
-                        <button class="btn-details">View Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Expired Prescription -->
-            <div class="prescription-card expired">
-                <div class="header">
-                    <div class="left">
-                        <div class="icon expired"><i class="fas fa-prescription-bottle-alt"></i></div>
-                        <div class="info">
-                            <div class="name">Warfarin</div>
-                            <div class="meta">
-                                <span><i class="fas fa-user-md"></i> Dr. Septiannisa</span>
-                                <span><i class="fas fa-calendar-alt"></i> Prescribed: Jan 5, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="status-badge expired">Expired</span>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="detail">
-                        <div class="label">Dosage</div>
-                        <div class="value"><span class="dosage">5mg</span> once daily</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Quantity</div>
-                        <div class="value">30 tablets</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Instructions</div>
-                        <div class="value">Take in the evening with food</div>
-                    </div>
-                    <div class="detail">
-                        <div class="label">Refills</div>
-                        <div class="value">0 refills remaining</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="refills">⛔ Expired on Jul 5, 2025</div>
-                    <div class="actions">
-                        <button class="btn-details">View Details</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Empty State (hidden by default) -->
+        <!-- Empty state -->
         <div class="empty-state" id="emptyState" style="display: none;">
             <i class="fas fa-prescription-bottle-alt"></i>
             <h3>No Prescriptions Found</h3>
-            <p>You don't have any prescriptions in this category.</p>
-            <a href="book-appointment.html" style="display: inline-block; margin-top: 16px; background: var(--primary-light); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none;">
+            <p>You don't have any prescriptions yet.</p>
+            <a href="patient_new_appointment.html"
+               style="display: inline-block; margin-top: 16px; background: var(--primary-light, #2563eb); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none;">
                 Book an Appointment
             </a>
         </div>
@@ -361,66 +137,160 @@
 
     <script src="./js/patient_dashboard.js"></script>
 
-    
     <script>
-        
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+    /* ============================================================
+       Patient Prescriptions — wired to /prescriptions/patient/me
+       ============================================================ */
 
-                const filter = this.dataset.filter;
-                const cards = document.querySelectorAll('.prescription-card');
-                let visibleCount = 0;
+    const PRESCRIPTION_API = '/prescriptions';
 
-                cards.forEach(card => {
-                    if (filter === 'all' || card.classList.contains(filter)) {
-                        card.style.display = 'block';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+    let allPrescriptions = [];
 
-                const emptyState = document.getElementById('emptyState');
-                if (visibleCount === 0) {
-                    emptyState.style.display = 'block';
-                } else {
-                    emptyState.style.display = 'none';
-                }
-            });
+    const $ = (sel) => document.querySelector(sel);
+
+    /* ---------- helpers ---------- */
+    function getDoctorName(p) {
+        const u = p?.doctor?.user || {};
+        const full = `${u.firstName || ''} ${u.lastName || ''}`.trim();
+        return full ? `Dr. ${full}` : 'Unknown doctor';
+    }
+
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+    }
+
+    function escapeHtml(str) {
+        return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    /* ---------- render ---------- */
+    function renderPrescriptions() {
+        const container = $('#prescriptionsContainer');
+        const empty = $('#emptyState');
+        const countEl = $('#prescriptionCount');
+        if (!container) return;
+
+        const query = ($('#searchInput')?.value || '').toLowerCase().trim();
+
+        const filtered = allPrescriptions.filter((p) => {
+            if (!query) return true;
+            return (
+                (p.medications || '').toLowerCase().includes(query) ||
+                (p.instructions || '').toLowerCase().includes(query) ||
+                getDoctorName(p).toLowerCase().includes(query)
+            );
         });
 
-        // ========================================
-        // REFILL BUTTON
-        // ========================================
-        document.querySelectorAll('.btn-refill').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const card = this.closest('.prescription-card');
-                const name = card.querySelector('.name')?.textContent || 'medication';
+        if (countEl) {
+            countEl.textContent =
+                `${filtered.length} prescription${filtered.length === 1 ? '' : 's'}`;
+        }
 
-                // Show loading state
-                this.textContent = 'Requesting...';
-                this.disabled = true;
+        if (!filtered.length) {
+            container.innerHTML = '';
+            if (empty) empty.style.display = 'block';
+            return;
+        }
+        if (empty) empty.style.display = 'none';
 
-                setTimeout(() => {
-                    showToast(`✅ Refill requested for ${name}!`, 'success');
-                    this.textContent = 'Request Refill';
-                    this.disabled = false;
-                }, 1500);
-            });
-        });
+        container.innerHTML = filtered.map(renderCard).join('');
+    }
 
-        
-        document.querySelectorAll('.btn-details').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const card = this.closest('.prescription-card');
-                const name = card.querySelector('.name')?.textContent || 'Prescription';
-                showToast(`📋 Details for ${name}`, 'info');
-            });
-        });
+    function renderCard(p) {
+        return `
+        <div class="prescription-card active">
+            <div class="header">
+                <div class="left">
+                    <div class="icon active">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                    </div>
+                    <div class="info">
+                        <div class="name">Prescription #${p.id}</div>
+                        <div class="meta">
+                            <span><i class="fas fa-user-md"></i> ${escapeHtml(getDoctorName(p))}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${fmtDate(p.createdAt)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+
+            <div class="body">
+                <div class="detail">
+                    <div class="label">Medications</div>
+                    <div class="value">${escapeHtml(p.medications || '—')}</div>
+                </div>
+                <div class="detail">
+                    <div class="label">Instructions</div>
+                    <div class="value">${escapeHtml(p.instructions || '—')}</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="refills">🆔 Issued ${fmtDate(p.createdAt)}</div>
+                <div class="actions">
+                    <button class="btn-details" onclick="viewDetails(${p.id})">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    /* ---------- actions ---------- */
+    function viewDetails(id) {
+        const p = allPrescriptions.find((x) => x.id === id);
+        if (!p) return;
+
+        const msg =
+            `Prescription #${p.id}\n\n` +
+            `Medications: ${p.medications || '—'}\n\n` +
+            `Instructions: ${p.instructions || '—'}\n\n` +
+            `Doctor: ${getDoctorName(p)}\n` +
+            `Issued: ${fmtDate(p.createdAt)}`;
+
+        if (typeof showToast === 'function') {
+            showToast(`Prescription #${p.id} details opened`, 'info');
+        }
+        alert(msg); // swap for a modal later if you want
+    }
+
+    /* ---------- load ---------- */
+    async function loadPrescriptions() {
+        try {
+            // GET /prescriptions/patient/me
+            const result = await apiRequest(`${PRESCRIPTION_API}/patient/me`, 'GET');
+            allPrescriptions = result.data || [];
+            renderPrescriptions();
+        } catch (err) {
+            console.error('Failed to load prescriptions:', err);
+            if (typeof showToast === 'function') {
+                showToast(err.message || 'Failed to load prescriptions', 'error');
+            }
+            const countEl = $('#prescriptionCount');
+            if (countEl) countEl.textContent = 'Failed to load';
+            const empty = $('#emptyState');
+            if (empty) empty.style.display = 'block';
+        }
+    }
+
+    /* ---------- init ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+        const search = $('#searchInput');
+        if (search) search.addEventListener('input', renderPrescriptions);
+
+        loadPrescriptions();
+    });
+
+    /* expose for inline onclick */
+    window.viewDetails = viewDetails;
     </script>
 </body>
 </html>
