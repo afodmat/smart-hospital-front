@@ -20,9 +20,10 @@ async function checkAuth() {
 
     try {
         const result = await apiRequest('/auth/me', 'GET');
-        const user = result?.data || result?.user;
+        const user = result?.data?.user || result?.data || result?.user;
+        const role = String(user?.role || '').toUpperCase();
 
-        if (!user || !['DOCTOR', 'ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+        if (!user || !['DOCTOR', 'ADMIN', 'SUPER_ADMIN'].includes(role)) {
             redirectToLogin();
             return false;
         }
@@ -847,7 +848,7 @@ async function loadDoctorPrescriptions() {
 // INITIALIZATION
 // ========================================
 document.addEventListener("DOMContentLoaded", async () => {
-    if (!checkAuth()) return;
+    if (!(await checkAuth())) return;
 
     loadUserData();
     highlightActivePage();
