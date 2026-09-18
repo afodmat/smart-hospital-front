@@ -46,8 +46,14 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 
         const result = await response.json();
 
-        if (response.status === 401) {
+        const message = String(result.message || '');
+        const authorizationFailed = response.status === 401 || (
+            response.status === 500 && /authorization failed|authentication failed|invalid token/i.test(message)
+        );
+
+        if (authorizationFailed) {
             localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
             localStorage.removeItem('user');
             window.location.href = 'login.html';
             throw new Error('Authentication required. Please log in.');
