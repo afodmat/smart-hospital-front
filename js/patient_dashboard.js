@@ -1,6 +1,6 @@
 
 // CONFIGURATION
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'https://smart-hospital-fet1.onrender.com';
 const FRONTEND_URL = 'http://localhost:5500';
 
 // AUTHENTICATION
