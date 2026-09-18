@@ -1,12 +1,42 @@
 const API_BASE_URL = 'http://localhost:5001';
 const FRONTEND_URL = 'http://localhost:5500';
 
+function redirectToLogin() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
 // AUTHENTICATION
 
-function checkAuth() {
+async function checkAuth() {
     const token = localStorage.getItem('access_token');
+
     if (!token) {
-        window.location.href = 'login.html';
+        redirectToLogin();
+        return false;
+    }
+
+    try {
+        const result = await apiRequest('/auth/me', 'GET');
+        const user = result?.data || result?.user;
+
+        if (!user || !['DOCTOR', 'ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+            redirectToLogin();
+            return false;
+        }
+
+        localStorage.setItem('user', JSON.stringify({
+            ...(JSON.parse(localStorage.getItem('user') || '{}')),
+            ...user,
+        }));
+
+        return true;
+    } catch (error) {
+        console.error('Doctor auth check failed:', error);
+        redirectToLogin();
+        return false;
     }
 }
 
@@ -15,14 +45,6 @@ function handleLogout() {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     window.location.href = 'login.html';
-}
-
-function checkAuth() {
-  if (!localStorage.getItem("access_token")) {
-    redirectToLogin();
-    return false;
-  }
-  return true;
 }
 
 // API REQUEST
@@ -187,12 +209,6 @@ function highlightActivePage() {
 // ========================================
 // LOGOUT
 // ========================================
-function handleLogout() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
-}
 
 if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
@@ -410,43 +426,38 @@ function renderPatientQueue(appointments) {
     });
 }
 
-function updateDashboardStats(todayAppointments) {
-    const waiting = todayAppointments.filter((appointment) =>
-        ["pending", "confirmed", "scheduled"].includes(
-            getAppointmentStatus(appointment)
-        )
-    ).length;
-
-    const completed = todayAppointments.filter(
-        (appointment) => getAppointmentStatus(appointment) === "completed"
-    ).length;
-
-    const statValues = [
-        todayAppointments.length,
-        waiting,
-        completed,
-        "—",
-    ];
-
-    document.querySelectorAll(".stat-card .number").forEach((element, index) => {
-        element.textContent = statValues[index];
-    });
-
-    const quickStats = {
-        "Total Patients Today": todayAppointments.length,
-        "Patients Seen": completed,
-        "Waiting": waiting,
-        "Average Duration": "—",
+function updateDashboardStats(appointments, prescriptions) {
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
     };
 
-    document.querySelectorAll(".quick-stat").forEach((row) => {
-        const label = row.querySelector(".label")?.textContent.trim();
-        const value = row.querySelector(".value");
+    // Big stat cards
+    setText("statTotalAppointments", appointments.length);
+    setText("statTotalPrescriptions", prescriptions.length);
 
-        if (value && Object.hasOwn(quickStats, label)) {
-            value.textContent = quickStats[label];
-        }
-    });
+    // Quick Stats
+    setText("quickTotalAppointments", appointments.length);
+    setText("quickTotalPrescriptions", prescriptions.length);
+
+    // Sidebar badges
+    const appointmentsBadge = document.getElementById("appointmentsBadge");
+    if (appointmentsBadge) {
+        appointmentsBadge.textContent = appointments.length;
+        appointmentsBadge.style.display = appointments.length ? "" : "none";
+    }
+
+    const allAppointmentsBadge = document.getElementById("allAppointmentsBadge");
+    if (allAppointmentsBadge) {
+        allAppointmentsBadge.textContent = appointments.length;
+        allAppointmentsBadge.style.display = appointments.length ? "" : "none";
+    }
+
+    const prescriptionsBadge = document.getElementById("prescriptionsSidebarBadge");
+    if (prescriptionsBadge) {
+        prescriptionsBadge.textContent = prescriptions.length;
+        prescriptionsBadge.style.display = prescriptions.length ? "" : "none";
+    }
 }
 
 async function loadDoctorDashboard() {
@@ -457,15 +468,19 @@ async function loadDoctorDashboard() {
     }
 
     const appointments = result.data || [];
-    const todayAppointments = appointments.filter((appointment) =>
-        isToday(appointment.scheduledAt)
+    const todayAppointments = appointments.filter((a) =>
+        isToday(a.scheduledAt)
     );
 
-    updateDashboardStats(todayAppointments);
+    const prescriptions = await loadDoctorPrescriptions();
+
+    // Stats — all-time counts
+    updateDashboardStats(appointments, prescriptions);
+
+    // Lists — still scoped to today (queue + schedule widgets)
     renderPatientQueue(todayAppointments);
     renderTodaySchedule(todayAppointments);
 }
-
 // ========================================
 // TOAST NOTIFICATIONS
 // ========================================
@@ -577,6 +592,16 @@ function initSearch() {
         console.log('Searching for:', query);
         // This can be extended to filter content
     });
+}
+
+async function loadDoctorPrescriptions() {
+    try {
+        const result = await apiRequest('/prescriptions/doctor/me', 'GET');
+        return result.data || [];
+    } catch (error) {
+        console.error('Failed to load prescriptions:', error);
+        return []; // Don't break the dashboard if this fails
+    }
 }
 
 // const DOCTOR_API_BASE_URL = 'http://localhost:5001';
