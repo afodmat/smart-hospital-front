@@ -242,6 +242,18 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+    border: 2px dashed #e5e7eb;
+    border-radius: 14px;
+    margin-top: 16px;
+}
+.empty-state i { font-size: 48px; opacity: 0.3; }
+.empty-state h3 { margin: 14px 0 6px; font-size: 18px; }
+.empty-state p { margin: 0; font-size: 15px; }
+
 /* ========================================
    OVERLAY (Mobile)
    ======================================== */

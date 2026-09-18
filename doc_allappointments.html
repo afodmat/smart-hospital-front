@@ -57,7 +57,7 @@
 
             <a href="doc_prescriptions.html" data-page="prescriptions">
                 <i class="fas fa-prescription-bottle-alt"></i> Prescriptions
-                <span class="badge" id="prescriptionsSidebarBadge" style="display:none;">0</span>
+                <span class="badge">3</span>
             </a>
 
             <a href="doc_medicalrecords.html" data-page="medical-records">
@@ -111,110 +111,206 @@
         </header>
 
         <!-- Filter Tabs -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">All <span class="count">6</span></button>
-            <button class="filter-tab" data-filter="scheduled">Scheduled <span class="count">3</span></button>
-            <button class="filter-tab" data-filter="completed">Completed <span class="count">2</span></button>
-            <button class="filter-tab" data-filter="cancelled">Cancelled <span class="count">1</span></button>
-        </div>
+        <!-- Filter Tabs -->
+<div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" data-filter="all">
+        All <span class="count" id="countAll">0</span>
+    </button>
+    <button class="filter-tab" data-filter="scheduled">
+        Scheduled <span class="count" id="countScheduled">0</span>
+    </button>
+    <button class="filter-tab" data-filter="completed">
+        Completed <span class="count" id="countCompleted">0</span>
+    </button>
+    <button class="filter-tab" data-filter="cancelled">
+        Cancelled <span class="count" id="countCancelled">0</span>
+    </button>
+</div>
 
-        <!-- Appointments List -->
-        <div class="appointment-card scheduled">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">John Smith</div>
-                    <div class="sub">Follow-up · Critical · Oct 22, 2026 09:00 AM</div>
-                </div>
-            </div>
-            <span class="status-badge scheduled">Scheduled</span>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="showToast('Starting consultation with John Smith', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
-            </div>
-        </div>
+<!-- Dynamic list -->
+<div id="appointmentsList"></div>
 
-        <div class="appointment-card scheduled">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">Sarah Johnson</div>
-                    <div class="sub">Initial Consultation · High · Oct 22, 2026 10:30 AM</div>
-                </div>
-            </div>
-            <span class="status-badge scheduled">Scheduled</span>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="showToast('Starting consultation with Sarah Johnson', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
-            </div>
-        </div>
-
-        <div class="appointment-card scheduled">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">Emily Davis</div>
-                    <div class="sub">Routine Checkup · Medium · Oct 22, 2026 02:00 PM</div>
-                </div>
-            </div>
-            <span class="status-badge scheduled">Scheduled</span>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="showToast('Starting consultation with Emily Davis', 'info')" style="padding: 6px 12px; border: none; border-radius: 6px; background: var(--primary-lighter); color: white; cursor: pointer; font-size: 13px;">Start</button>
-            </div>
-        </div>
-
-        <div class="appointment-card completed">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">James Wilson</div>
-                    <div class="sub">Routine Checkup · Low · Oct 22, 2026 08:00 AM</div>
-                </div>
-            </div>
-            <span class="status-badge completed">Completed</span>
-        </div>
-
-        <div class="appointment-card completed">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">Michael Chen</div>
-                    <div class="sub">Follow-up · High · Oct 22, 2026 12:00 PM</div>
-                </div>
-            </div>
-            <span class="status-badge completed">Completed</span>
-        </div>
-
-        <div class="appointment-card cancelled">
-            <div class="left">
-                <div class="icon"><i class="fas fa-user-md"></i></div>
-                <div class="info">
-                    <div class="title">Robert Wilson</div>
-                    <div class="sub">Medication Refill · Low · Oct 22, 2026 03:30 PM</div>
-                </div>
-            </div>
-            <span class="status-badge cancelled">Cancelled</span>
-        </div>
+<!-- Empty state -->
+<div class="empty-state" id="appointmentsEmpty" style="display:none;">
+    <i class="fas fa-calendar-times"></i>
+    <h3>No Appointments Found</h3>
+    <p>You have no appointments in this category.</p>
+</div>
     </main>
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="./js/doc_dashboard.js"></script>
     <script>
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+/* ============================================================
+   All Appointments — wired to /appointments/doctor/me
+   ============================================================ */
 
-                const filter = this.dataset.filter;
-                const cards = document.querySelectorAll('.appointment-card');
+const APPOINTMENTS_API = '/appointments';
 
-                cards.forEach(card => {
-                    if (filter === 'all' || card.classList.contains(filter)) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
+let allAppointments = [];
+let currentFilter = 'all';
+
+const $ = (sel) => document.querySelector(sel);
+
+/* ---------- helpers ---------- */
+function getStatus(a) {
+    return String(a.status || 'pending').toLowerCase();
+}
+
+function getPatientName(a) {
+    const u = a.patient?.user || {};
+    return `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown patient';
+}
+
+function getType(a) {
+    return a.type || a.symptoms || 'Appointment';
+}
+
+function fmtDateTime(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
+}
+
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
+/* Status → filter bucket */
+function bucketOf(status) {
+    if (status === 'completed') return 'completed';
+    if (status === 'cancelled') return 'cancelled';
+    // pending | confirmed | scheduled all count as "scheduled"
+    return 'scheduled';
+}
+
+/* ---------- render ---------- */
+function renderAppointments() {
+    const list = $('#appointmentsList');
+    const empty = $('#appointmentsEmpty');
+    if (!list) return;
+
+    const query = ($('#searchInput')?.value || '').toLowerCase().trim();
+
+    const filtered = allAppointments.filter((a) => {
+        const bucket = bucketOf(getStatus(a));
+        const matchesFilter = currentFilter === 'all' || bucket === currentFilter;
+        const matchesSearch =
+            !query ||
+            getPatientName(a).toLowerCase().includes(query) ||
+            getType(a).toLowerCase().includes(query);
+        return matchesFilter && matchesSearch;
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '';
+        if (empty) empty.style.display = 'block';
+    } else {
+        if (empty) empty.style.display = 'none';
+        list.innerHTML = filtered
+            .sort((a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt))
+            .map(renderCard)
+            .join('');
+    }
+
+    // Update tab counts from the *unfiltered* list
+    const counts = { all: allAppointments.length, scheduled: 0, completed: 0, cancelled: 0 };
+    allAppointments.forEach((a) => {
+        counts[bucketOf(getStatus(a))]++;
+    });
+
+    const setCount = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+    setCount('countAll', counts.all);
+    setCount('countScheduled', counts.scheduled);
+    setCount('countCompleted', counts.completed);
+    setCount('countCancelled', counts.cancelled);
+}
+
+function renderCard(a) {
+    const status = getStatus(a);
+    const bucket = bucketOf(status);
+    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+    const canStart = ['pending', 'confirmed', 'scheduled'].includes(status);
+
+    return `
+    <div class="appointment-card ${bucket}">
+        <div class="left">
+            <div class="icon"><i class="fas fa-user-md"></i></div>
+            <div class="info">
+                <div class="title">${escapeHtml(getPatientName(a))}</div>
+                <div class="sub">
+                    ${escapeHtml(getType(a))} · ${escapeHtml(statusLabel)} · ${fmtDateTime(a.scheduledAt)}
+                </div>
+            </div>
+        </div>
+        <span class="status-badge ${bucket}">${statusLabel}</span>
+        ${canStart ? `
+            <div style="display: flex; gap: 8px;">
+                <button onclick="startConsultation(${a.id})"
+                    style="padding: 6px 12px; border: none; border-radius: 6px;
+                           background: var(--primary-lighter); color: white;
+                           cursor: pointer; font-size: 13px;">
+                    Start
+                </button>
+            </div>` : ''}
+    </div>`;
+}
+
+/* ---------- actions ---------- */
+function startConsultation(id) {
+    const a = allAppointments.find((x) => x.id === id);
+    if (!a) return;
+    if (typeof showToast === 'function') {
+        showToast(`Starting consultation with ${getPatientName(a)}`, 'info');
+    }
+    // Optional: navigate to a consultation page
+    // window.location.href = `doc_consultation.html?appointmentId=${id}`;
+}
+
+/* ---------- load ---------- */
+async function loadAppointments() {
+    try {
+        const result = await apiRequest(`${APPOINTMENTS_API}/doctor/me`, 'GET');
+        allAppointments = result.data || [];
+        renderAppointments();
+    } catch (err) {
+        console.error('Failed to load appointments:', err);
+        if (typeof showToast === 'function') {
+            showToast(err.message || 'Failed to load appointments', 'error');
+        }
+        const empty = $('#appointmentsEmpty');
+        if (empty) empty.style.display = 'block';
+    }
+}
+
+/* ---------- init ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach((tab) => {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.filter;
+            renderAppointments();
         });
-    </script>
+    });
+
+    // Search
+    const search = $('#searchInput');
+    if (search) search.addEventListener('input', renderAppointments);
+
+    loadAppointments();
+});
+
+/* expose for inline onclick */
+window.startConsultation = startConsultation;
+</script>
 </body>
 </html>
