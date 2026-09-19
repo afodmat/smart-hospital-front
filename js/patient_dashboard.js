@@ -58,7 +58,10 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 
         if (!response) throw lastError;
 
-        const result = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const result = contentType.includes('application/json')
+            ? await response.json()
+            : {};
 
         const message = String(result.message || '');
         const authorizationFailed = response.status === 401 || (
@@ -75,7 +78,7 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 
         if (!response.ok) {
             throw new Error(
-                result.message || `HTTP error ${response.status}`
+                result.message || `HTTP error ${response.status} from ${endpoint}`
             );
         }
 
