@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Create Prescription - Smart Hospital</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- Shared Doctor CSS -->
+    <link rel="stylesheet" href="./css/doc_dashboard.css" />
+
+    <style>
+        /* =========================================================
+           CREATE PRESCRIPTION PAGE
+           ========================================================= */
+
+        .prescription-page {
+            padding: 24px;
+        }
+
+        .page-heading {
+            margin-bottom: 20px;
+        }
+
+        .page-heading h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .page-heading p {
+            margin: 6px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Main two-column layout */
+        .prescription-layout {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.9fr) minmax(400px, 1.4fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-header-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef4ff;
+            color: #2563eb;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .panel-header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* Patient section */
+        .patient-summary {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .patient-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .patient-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .patient-id {
+            margin-top: 3px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .detail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .detail-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .detail-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        .detail-content {
+            min-width: 0;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #9ca3af;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            color: #111827;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .symptoms-box,
+        .additional-info-box {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .symptoms-box h4,
+        .additional-info-box h4 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .symptoms-box p,
+        .additional-info-box p {
+            margin: 0;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* Prescription form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            padding: 11px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 6px;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        /* Medication rows */
+        .medications-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .medication-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .medication-row .form-control {
+            flex: 1;
+        }
+
+        .remove-medication-btn {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #dc2626;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .remove-medication-btn:hover {
+            background: #fecaca;
+        }
+
+        .add-medication-btn {
+            margin-top: 10px;
+            border: 1px dashed #9ca3af;
+            background: #f9fafb;
+            color: #374151;
+            padding: 9px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .add-medication-btn:hover {
+            background: #f3f4f6;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 10px;
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading */
+        .loading-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .loading-state i {
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        /* Error state */
+        .error-state {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .error-state i {
+            font-size: 42px;
+            color: #dc2626;
+            margin-bottom: 14px;
+        }
+
+        .error-state h3 {
+            margin: 0 0 7px;
+        }
+
+        .error-state p {
+            color: #6b7280;
+            margin: 0 0 18px;
+        }
+
+        /* Appointment status */
+        .appointment-status {
+            display: inline-flex;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .prescription-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .prescription-page {
+                padding: 15px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-secondary,
+            .btn-primary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         SIDEBAR
+         ========================================================= -->
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+            <i class="fas fa-heartbeat"></i>
+
+            <div>
+                <span>Smart Hospital</span>
+                <small>Doctor Portal</small>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+
+            <div class="menu-label">Main</div>
+
+            <a href="doc_dashboard.html" data-page="doctor-dashboard">
+                <i class="fas fa-th-large"></i>
+                Dashboard
+            </a>
+
+            <div class="dropdown">
+
+                <button class="dropdown-toggle" id="appointmentsToggle">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+
+                    <span class="badge" id="appointmentsBadge">0</span>
+
+                    <span class="arrow">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </button>
+
+                <div class="dropdown-menu" id="appointmentsMenu">
+
+                    <a href="doc_schedule.html" data-page="today-schedule">
+                        <i class="fas fa-calendar-day"></i>
+                        Today's Schedule
+                    </a>
+
+                    <a href="doc_allappointments.html" data-page="all-appointments">
+                        <i class="fas fa-list"></i>
+                        All Appointments
+                    </a>
+
+                    <a href="doc_newappointments.html" data-page="new-appointment">
+                        <i class="fas fa-plus-circle"></i>
+                        New Appointment
+                    </a>
+
+                </div>
+            </div>
+
+            <a href="doc_mypatients.html" data-page="my-patients">
+                <i class="fas fa-user-md"></i>
+                My Patients
+            </a>
+
+            <a href="doc_prescriptions.html" data-page="prescriptions">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                Prescriptions
+            </a>
+
+            <a href="doc_medicalrecords.html" data-page="medical-records">
+                <i class="fas fa-notes-medical"></i>
+                Medical Records
+            </a>
+
+            <div class="menu-label" style="margin-top: 16px;">
+                Settings
+            </div>
+
+            <a href="doc_profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i>
+                Profile
+            </a>
+
+            <a href="#" data-page="notifications">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </a>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <div class="avatar" id="sidebarAvatar">
+                    DS
+                </div>
+
+                <div class="user-info">
+
+                    <div class="name" id="sidebarName">
+                        Doctor
+                    </div>
+
+                    <div class="role" id="sidebarRole">
+                        Doctor
+                    </div>
+
+                </div>
+
+                <button
+                    class="logout-btn"
+                    id="logoutBtn"
+                    title="Logout"
+                >
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
+    <main class="main-content" id="mainContent">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="toggle-btn"
+                    id="toggleSidebar"
+                >
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <h1>
+                    Create Prescription
+                    <small>Patient visit</small>
+                </h1>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="avatar-small" id="topbarAvatar">
+                    DS
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             PAGE
+             ===================================================== -->
+
+        <section class="prescription-page">
+
+            <div class="page-heading">
+
+                <h2>
+                    New Prescription
+                </h2>
+
+                <p>
+                    Review the patient's appointment details and create
+                    a prescription for this visit.
+                </p>
+
+            </div>
+
+
+            <!-- Loading -->
+
+            <div
+                class="panel"
+                id="loadingPanel"
+            >
+
+                <div class="loading-state">
+
+                    <i class="fas fa-spinner fa-spin"></i>
+
+                    <div>
+                        Loading appointment...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Error -->
+
+            <div
+                class="panel"
+                id="errorPanel"
+                style="display: none;"
+            >
+
+                <div class="error-state">
+
+                    <i class="fas fa-circle-exclamation"></i>
+
+                    <h3>
+                        Unable to load appointment
+                    </h3>
+
+                    <p id="errorMessage">
+                        Something went wrong.
+                    </p>
+
+                    <button
+                        class="btn-secondary"
+                        onclick="goBackToAppointments()"
+                    >
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Appointments
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 MAIN CONTENT
+                 ================================================= -->
+
+            <div
+                class="prescription-layout"
+                id="prescriptionLayout"
+                style="display: none;"
+            >
+
+                <!-- =================================================
+                     LEFT: APPOINTMENT / PATIENT INFORMATION
+                     ================================================= -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-header-icon">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+
+                        <div>
+                            <h3>
+                                Patient & Appointment
+                            </h3>
+
+                            <p>
+                                Information from the selected visit
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel-body">
+
+                        <!-- Patient -->
+
+                        <div class="patient-summary">
+
+                            <div
+                                class="patient-avatar"
+                                id="patientAvatar"
+                            >
+                                P
+                            </div>
+
+                            <div>
+
+                                <div
+                                    class="patient-name"
+                                    id="patientName"
+                                >
+                                    Patient
+                                </div>
+
+                                <div
+                                    class="patient-id"
+                                    id="patientId"
+                                >
+                                    Patient ID: —
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Appointment Details -->
+
+                        <div class="detail-list">
+
+                            <!-- Appointment date -->
+
+                            <div class="detail-row">
+
+                                <div class="detail-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+
+                                <div class="detail-content">
+
+                                    <div class="detail-label">
+                                        Appointment
+                                    </div>
+
+                                    <div
+                                        class="detail-value"
+                                        id="appointmentDate"
+                                    >
+                                        —
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Appointment type -->
+
+                            <div class="detail-row">
+
+                                <div class="detail-icon">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+
+                                <div class="detail-content">
+
+                                    <div class="detail-label">
+                                        Visit Type
+                                    </div>
+
+                                    <div
+                                        class="detail-value"
+                                        id="appointmentType"
+                                    >
+                                        —
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Status -->
+
+                            <div class="detail-row">
+
+                                <div class="detail-icon">
+                                    <i class="fas fa-circle-check"></i>
+                                </div>
+
+                                <div class="detail-content">
+
+                                    <div class="detail-label">
+                                        Status
+                                    </div>
+
+                                    <div class="detail-value">
+
+                                        <span
+                                            class="appointment-status"
+                                            id="appointmentStatus"
+                                        >
+                                            —
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Symptoms -->
+
+                        <div class="symptoms-box">
+
+                            <h4>
+                                <i class="fas fa-notes-medical"></i>
+                                What the patient reported
+                            </h4>
+
+                            <p id="patientSymptoms">
+                                —
+                            </p>
+
+                        </div>
+
+
+                        <!-- Additional information -->
+
+                        <div
+                            class="additional-info-box"
+                            id="additionalInfoBox"
+                        >
+
+                            <h4>
+                                <i class="fas fa-circle-info"></i>
+                                Additional Information
+                            </h4>
+
+                            <p id="patientAdditionalInfo">
+                                —
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     RIGHT: PRESCRIPTION FORM
+                     ================================================= -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-header-icon">
+                            <i class="fas fa-prescription-bottle-medical"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Prescription
+                            </h3>
+
+                            <p>
+                                Enter the medication prescribed for this visit
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        class="panel-body"
+                        id="prescriptionForm"
+                    >
+
+                        <!-- Hidden patient ID -->
+
+                        <input
+                            type="hidden"
+                            id="patientIdInput"
+                        />
+
+
+                        <!-- Medications -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Medications
+                            </label>
+
+                            <div
+                                class="medications-container"
+                                id="medicationsContainer"
+                            >
+
+                                <div class="medication-row">
+
+                                    <input
+                                        type="text"
+                                        class="form-control medication-input"
+                                        placeholder="e.g. Paracetamol 500mg — twice daily"
+                                        required
+                                    />
+
+                                    <button
+                                        type="button"
+                                        class="remove-medication-btn"
+                                        onclick="removeMedication(this)"
+                                        title="Remove medication"
+                                    >
+                                        <i class="fas fa-times"></i>
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="add-medication-btn"
+                                id="addMedicationBtn"
+                            >
+                                <i class="fas fa-plus"></i>
+                                Add medication
+                            </button>
+
+                            <small class="form-help">
+                                Include the medicine name, dosage and frequency.
+                            </small>
+
+                        </div>
+
+
+                        <!-- Instructions -->
+
+                        <div class="form-group">
+
+                            <label for="instructionsInput">
+                                Instructions
+                            </label>
+
+                            <textarea
+                                id="instructionsInput"
+                                class="form-control"
+                                maxlength="200"
+                                placeholder="e.g. Take after meals with water."
+                            ></textarea>
+
+                            <small class="form-help">
+                                Optional. Maximum 200 characters.
+                            </small>
+
+                        </div>
+
+
+                        <!-- Actions -->
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                id="cancelBtn"
+                            >
+                                <i class="fas fa-arrow-left"></i>
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="btn-primary"
+                                id="savePrescriptionBtn"
+                            >
+                                <i class="fas fa-prescription-bottle-medical"></i>
+                                Create Prescription
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Toast -->
+
+    <div
+        class="toast-container"
+        id="toastContainer"
+    ></div>
+
+
+    <!-- Shared Doctor JS -->
+
+    <script src="./js/doc_dashboard.js"></script>
+
+
+    <script>
+        /* =========================================================
+           CREATE PRESCRIPTION
+           Option A
+
+           URL:
+           doc_newprescription.html?appointmentId=42
+
+           Flow:
+           appointmentId
+                ↓
+           GET /appointments/doctor/me
+                ↓
+           find appointment
+                ↓
+           get patient from appointment
+                ↓
+           POST /prescriptions
+           ========================================================= */
+
+
+        const APPOINTMENTS_API = '/appointments';
+        const PRESCRIPTION_API = '/prescriptions';
+
+
+        let selectedAppointment = null;
+
+
+        /* =========================================================
+           HELPERS
+           ========================================================= */
+
+        const $ = (selector) => {
+            return document.querySelector(selector);
+        };
+
+
+        function escapeHtml(str) {
+
+            return String(str ?? '').replace(
+                /[&<>"']/g,
+                (character) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[character])
+            );
+
+        }
+
+
+        function getPatientName(appointment) {
+
+            const user = appointment?.patient?.user || {};
+
+            const fullName =
+                `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+            return fullName || 'Unknown patient';
+
+        }
+
+
+        function getPatientInitials(name) {
+
+            const parts = name
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean);
+
+            if (!parts.length) return 'P';
+
+            if (parts.length === 1) {
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+
+            return (
+                parts[0][0] +
+                parts[parts.length - 1][0]
+            ).toUpperCase();
+
+        }
+
+
+        function formatDateTime(dateValue) {
+
+            if (!dateValue) {
+                return 'Not provided';
+            }
+
+            const date = new Date(dateValue);
+
+            if (Number.isNaN(date.getTime())) {
+                return 'Not provided';
+            }
+
+            return date.toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+        }
+
+
+        function formatAppointmentType(type) {
+
+            if (!type) {
+                return 'General consultation';
+            }
+
+            return String(type)
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, letter => letter.toUpperCase());
+
+        }
+
+
+        function showPageError(message) {
+
+            $('#loadingPanel').style.display = 'none';
+            $('#prescriptionLayout').style.display = 'none';
+            $('#errorPanel').style.display = 'block';
+
+            $('#errorMessage').textContent =
+                message || 'Unable to load this appointment.';
+
+        }
+
+
+        function goBackToAppointments() {
+
+            window.location.href =
+                'doc_allappointments.html';
+
+        }
+
+
+        /* =========================================================
+           LOAD APPOINTMENT
+           ========================================================= */
+
+        async function loadAppointment() {
+
+            try {
+
+                const params =
+                    new URLSearchParams(window.location.search);
+
+                const appointmentId =
+                    Number(params.get('appointmentId'));
+
+
+                if (!appointmentId || !Number.isInteger(appointmentId)) {
+
+                    showPageError(
+                        'No valid appointment was selected.'
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * We deliberately use /appointments/doctor/me.
+                 *
+                 * This means the frontend is not asking:
+                 *
+                 * "Give me appointment 42"
+                 *
+                 * from an arbitrary endpoint.
+                 *
+                 * Instead:
+                 *
+                 * "Give me MY appointments"
+                 *
+                 * and then we find appointment 42.
+                 *
+                 * The backend therefore already limits the
+                 * appointment list to the authenticated doctor.
+                 */
+
+                const result = await apiRequest(
+                    `${APPOINTMENTS_API}/doctor/me`,
+                    'GET'
+                );
+
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        'Failed to load your appointments.'
+                    );
+
+                }
+
+
+                const appointments =
+                    result.data || [];
+
+
+                selectedAppointment =
+                    appointments.find(
+                        appointment =>
+                            Number(appointment.id) === appointmentId
+                    );
+
+
+                if (!selectedAppointment) {
+
+                    showPageError(
+                        'That appointment could not be found in your appointments.'
+                    );
+
+                    return;
+                }
+
+
+                renderAppointment(
+                    selectedAppointment
+                );
+
+
+                $('#loadingPanel').style.display = 'none';
+
+                $('#errorPanel').style.display = 'none';
+
+                $('#prescriptionLayout').style.display = 'grid';
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to load appointment:',
+                    error
+                );
+
+                showPageError(
+                    error.message ||
+                    'Failed to load appointment.'
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           RENDER APPOINTMENT
+           ========================================================= */
+
+        function renderAppointment(appointment) {
+
+            const patient =
+                appointment.patient || {};
+
+            const patientUser =
+                patient.user || {};
+
+
+            const patientName =
+                getPatientName(appointment);
+
+
+            /*
+             * Patient information
+             */
+
+            $('#patientName').textContent =
+                patientName;
+
+
+            $('#patientAvatar').textContent =
+                getPatientInitials(patientName);
+
+
+            $('#patientId').textContent =
+                `Patient ID: ${patient.id ?? '—'}`;
+
+
+            /*
+             * Appointment information
+             */
+
+            $('#appointmentDate').textContent =
+                formatDateTime(
+                    appointment.scheduledAt
+                );
+
+
+            $('#appointmentType').textContent =
+                formatAppointmentType(
+                    appointment.type
+                );
+
+
+            const status =
+                String(
+                    appointment.status || 'pending'
+                ).toLowerCase();
+
+
+            $('#appointmentStatus').textContent =
+                status;
+
+
+            /*
+             * Patient symptoms
+             */
+
+            $('#patientSymptoms').textContent =
+                appointment.symptoms ||
+                'No symptoms were provided.';
+
+
+            /*
+             * Additional information
+             */
+
+            const additionalInfo =
+                appointment.additionalInfo;
+
+
+            if (
+                additionalInfo &&
+                String(additionalInfo).trim()
+            ) {
+
+                $('#patientAdditionalInfo').textContent =
+                    additionalInfo;
+
+            } else {
+
+                $('#patientAdditionalInfo').textContent =
+                    'No additional information was provided.';
+
+            }
+
+
+            /*
+             * Hidden patient ID
+             *
+             * This is NOT coming from the URL.
+             *
+             * It comes from the appointment returned
+             * for the authenticated doctor.
+             */
+
+            $('#patientIdInput').value =
+                patient.id || '';
+
+        }
+
+
+        /* =========================================================
+           MEDICATION ROWS
+           ========================================================= */
+
+        function addMedication(value = '') {
+
+            const container =
+                $('#medicationsContainer');
+
+
+            const row =
+                document.createElement('div');
+
+
+            row.className =
+                'medication-row';
+
+
+            row.innerHTML = `
+
+                <input
+                    type="text"
+                    class="form-control medication-input"
+                    placeholder="e.g. Amoxicillin 500mg — three times daily"
+                    value="${escapeHtml(value)}"
+                    required
+                />
+
+                <button
+                    type="button"
+                    class="remove-medication-btn"
+                    title="Remove medication"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+
+            `;
+
+
+            row
+                .querySelector('.remove-medication-btn')
+                .addEventListener(
+                    'click',
+                    () => removeMedication(
+                        row.querySelector(
+                            '.remove-medication-btn'
+                        )
+                    )
+                );
+
+
+            container.appendChild(row);
+
+        }
+
+
+        function removeMedication(button) {
+
+            const container =
+                $('#medicationsContainer');
+
+
+            const rows =
+                container.querySelectorAll(
+                    '.medication-row'
+                );
+
+
+            /*
+             * Always keep at least one
+             * medication input.
+             */
+
+            if (rows.length <= 1) {
+
+                const input =
+                    rows[0]?.querySelector(
+                        '.medication-input'
+                    );
+
+                if (input) {
+                    input.value = '';
+                }
+
+                return;
+            }
+
+
+            button
+                .closest('.medication-row')
+                ?.remove();
+
+        }
+
+
+        function getMedications() {
+
+            const inputs =
+                document.querySelectorAll(
+                    '.medication-input'
+                );
+
+
+            return Array.from(inputs)
+                .map(input =>
+                    input.value.trim()
+                )
+                .filter(Boolean);
+
+        }
+
+
+        /* =========================================================
+           SUBMIT PRESCRIPTION
+           ========================================================= */
+
+        async function submitPrescription(event) {
+
+            event.preventDefault();
+
+
+            if (!selectedAppointment) {
+
+                showToastSafe(
+                    'Appointment information is missing.',
+                    'error'
+                );
+
+                return;
+            }
+
+
+            const patientId =
+                Number(
+                    $('#patientIdInput').value
+                );
+
+
+            if (!patientId) {
+
+                showToastSafe(
+                    'Patient information is missing.',
+                    'error'
+                );
+
+                return;
+            }
+
+
+            const medications =
+                getMedications();
+
+
+            if (!medications.length) {
+
+                showToastSafe(
+                    'Please enter at least one medication.',
+                    'error'
+                );
+
+                return;
+            }
+
+
+            const instructions =
+                $('#instructionsInput')
+                    .value
+                    .trim();
+
+
+            const saveButton =
+                $('#savePrescriptionBtn');
+
+
+            try {
+
+                /*
+                 * Prevent duplicate submissions.
+                 */
+
+                saveButton.disabled = true;
+
+                saveButton.innerHTML = `
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Creating...
+                `;
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * We do NOT send doctorId.
+                 *
+                 * The backend derives the doctor from
+                 * req.user.id.
+                 */
+
+                const payload = {
+
+                    patientId: patientId,
+
+                    medications: medications,
+
+                    instructions:
+                        instructions || undefined
+
+                };
+
+
+                console.log(
+                    'Creating prescription:',
+                    payload
+                );
+
+
+                const result =
+                    await apiRequest(
+                        PRESCRIPTION_API,
+                        'POST',
+                        payload
+                    );
+
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        'Failed to create prescription.'
+                    );
+
+                }
+
+
+                showToastSafe(
+                    'Prescription created successfully.',
+                    'success'
+                );
+
+
+                /*
+                 * Give the toast a moment to display,
+                 * then take the doctor to prescription history.
+                 */
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        'doc_prescriptions.html';
+
+                }, 800);
+
+
+            } catch (error) {
+
+                console.error(
+                    'Failed to create prescription:',
+                    error
+                );
+
+
+                showToastSafe(
+                    error.message ||
+                    'Failed to create prescription.',
+                    'error'
+                );
+
+
+                saveButton.disabled = false;
+
+                saveButton.innerHTML = `
+                    <i class="fas fa-prescription-bottle-medical"></i>
+                    Create Prescription
+                `;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TOAST
+           ========================================================= */
+
+        function showToastSafe(message, type = 'info') {
+
+            if (typeof showToast === 'function') {
+
+                showToast(
+                    message,
+                    type
+                );
+
+                return;
+            }
+
+
+            /*
+             * Fallback if the shared dashboard JS
+             * does not expose showToast.
+             */
+
+            const container =
+                $('#toastContainer');
+
+
+            if (!container) {
+
+                alert(message);
+
+                return;
+
+            }
+
+
+            const toast =
+                document.createElement('div');
+
+
+            toast.style.cssText = `
+                background: #111827;
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-top: 10px;
+                font-size: 13px;
+                box-shadow: 0 5px 15px rgba(0,0,0,.15);
+            `;
+
+
+            toast.textContent =
+                message;
+
+
+            container.appendChild(toast);
+
+
+            setTimeout(() => {
+
+                toast.remove();
+
+            }, 3500);
+
+        }
+
+
+        /* =========================================================
+           INITIALIZATION
+           ========================================================= */
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            async () => {
+
+                /*
+                 * Use the existing authentication helper
+                 * from doc_dashboard.js.
+                 */
+
+                if (
+                    typeof checkAuth === 'function' &&
+                    !checkAuth()
+                ) {
+                    return;
+                }
+
+
+                /*
+                 * Load sidebar/user information if the
+                 * existing dashboard JS provides it.
+                 */
+
+                if (
+                    typeof loadUserData === 'function'
+                ) {
+
+                    try {
+
+                        await loadUserData();
+
+                    } catch (error) {
+
+                        console.warn(
+                            'Could not load user data:',
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                 * Highlight the active sidebar page.
+                 */
+
+                if (
+                    typeof highlightActivePage === 'function'
+                ) {
+
+                    highlightActivePage();
+
+                }
+
+
+                /*
+                 * Load the selected appointment.
+                 */
+
+                await loadAppointment();
+
+            }
+        );
+
+
+        /* =========================================================
+           EVENT LISTENERS
+           ========================================================= */
+
+        $('#addMedicationBtn')
+            .addEventListener(
+                'click',
+                () => addMedication()
+            );
+
+
+        $('#prescriptionForm')
+            .addEventListener(
+                'submit',
+                submitPrescription
+            );
+
+
+        $('#cancelBtn')
+            .addEventListener(
+                'click',
+                goBackToAppointments
+            );
+
+
+        /* expose functions if needed elsewhere */
+
+        window.addMedication =
+            addMedication;
+
+        window.removeMedication =
+            removeMedication;
+
+        window.goBackToAppointments =
+            goBackToAppointments;
+
+    </script>
+
+</body>
+</html>

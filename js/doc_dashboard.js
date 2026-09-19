@@ -842,10 +842,196 @@ async function loadDoctorPrescriptions() {
 //     }
 // }
 
+
+// ========================================
+// DOCTOR PROFILE PAGE
+// ========================================
+
+async function loadDoctorProfilePage() {
+    try {
+        const result = await apiRequest("/doctors/me", "GET");
+
+        if (!result.success) {
+            throw new Error(
+                result.message || "Could not load doctor profile"
+            );
+        }
+
+        const doctor = result.data;
+        const user = doctor?.user || {};
+
+        // ----------------------------------------
+        // Basic user information
+        // ----------------------------------------
+
+        const firstName = user.firstName || "";
+        const lastName = user.lastName || "";
+
+        const fullName =
+            `${firstName} ${lastName}`.trim() || "Doctor";
+
+        const initials =
+            `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase() || "DR";
+
+        const specialty =
+            doctor.specialty || "Not provided";
+
+        const phone =
+            doctor.phoneNumber || "Not provided";
+
+        const experience =
+            doctor.yearsOfExperience != null
+                ? `${doctor.yearsOfExperience} years`
+                : "Not provided";
+
+        const doctorId =
+            doctor.id != null
+                ? `DOC-${String(doctor.id).padStart(3, "0")}`
+                : "Not provided";
+
+
+        // ----------------------------------------
+        // Profile header
+        // ----------------------------------------
+
+        const profileName =
+            document.getElementById("profileName");
+
+        const profileSpecialty =
+            document.getElementById("profileSpecialty");
+
+        const profileAvatar =
+            document.getElementById("profileAvatar");
+
+
+        if (profileName) {
+            profileName.textContent = `Dr. ${fullName}`;
+        }
+
+        if (profileSpecialty) {
+            profileSpecialty.textContent =
+                `${specialty} · ID: ${doctorId}`;
+        }
+
+        if (profileAvatar) {
+            profileAvatar.textContent = initials;
+        }
+
+
+        // ----------------------------------------
+        // Profile quick stats
+        // ----------------------------------------
+
+        const profileDepartment =
+            document.getElementById("profileDepartment");
+
+        const profileSpecialization =
+            document.getElementById("profileSpecialization");
+
+        const profileExperience =
+            document.getElementById("profileExperience");
+
+        const profileDoctorId =
+            document.getElementById("profileDoctorId");
+
+
+        if (profileDepartment) {
+            profileDepartment.textContent =
+                specialty;
+        }
+
+        if (profileSpecialization) {
+            profileSpecialization.textContent =
+                specialty;
+        }
+
+        if (profileExperience) {
+            profileExperience.textContent =
+                experience;
+        }
+
+        if (profileDoctorId) {
+            profileDoctorId.textContent =
+                doctorId;
+        }
+
+
+        // ----------------------------------------
+        // Account details
+        // ----------------------------------------
+
+        const accountFullName =
+            document.getElementById("accountFullName");
+
+        const accountEmail =
+            document.getElementById("accountEmail");
+
+        const accountPhone =
+            document.getElementById("accountPhone");
+
+        const accountExperience =
+            document.getElementById("accountExperience");
+
+        const accountSpecialization =
+            document.getElementById("accountSpecialization");
+
+        const accountDoctorId =
+            document.getElementById("accountDoctorId");
+
+
+        if (accountFullName) {
+            accountFullName.textContent =
+                `Dr. ${fullName}`;
+        }
+
+        if (accountEmail) {
+            accountEmail.textContent =
+                user.email || "Not provided";
+        }
+
+        if (accountPhone) {
+            accountPhone.textContent =
+                phone;
+        }
+
+        if (accountExperience) {
+            accountExperience.textContent =
+                experience;
+        }
+
+        if (accountSpecialization) {
+            accountSpecialization.textContent =
+                specialty;
+        }
+
+        if (accountDoctorId) {
+            accountDoctorId.textContent =
+                doctorId;
+        }
+
+
+        console.log("✅ Doctor profile loaded:", doctor);
+
+    } catch (error) {
+
+        console.error(
+            "❌ Failed to load doctor profile:",
+            error
+        );
+
+        showToast(
+            `Failed to load profile: ${error.message}`,
+            "error"
+        );
+    }
+}
+
+
 // ========================================
 // INITIALIZATION
 // ========================================
 document.addEventListener("DOMContentLoaded", async () => {
+
     if (!(await checkAuth())) return;
 
     loadUserData();
@@ -853,13 +1039,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     initStatusToggle();
     initSearch();
 
+    const currentPage =
+        window.location.pathname.split("/").pop();
+
     try {
-        await Promise.all([
-            loadDoctorProfile(),
-            loadDoctorDashboard(),
-        ]);
+
+        if (currentPage === "doc_profile.html") {
+
+            // Profile page
+            await loadDoctorProfilePage();
+
+        } else {
+
+            // Dashboard pages
+            await Promise.all([
+                loadDoctorProfile(),
+                loadDoctorDashboard()
+            ]);
+
+        }
+
     } catch (error) {
-        console.error("Failed to load dashboard:", error);
-        showToast(error.message || "Failed to load dashboard data", "error");
+
+        console.error(
+            "Failed to load doctor page:",
+            error
+        );
+
+        showToast(
+            error.message || "Failed to load page data",
+            "error"
+        );
     }
 });

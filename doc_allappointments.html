@@ -253,26 +253,50 @@ function renderCard(a) {
         <span class="status-badge ${bucket}">${statusLabel}</span>
         ${canStart ? `
             <div style="display: flex; gap: 8px;">
-                <button onclick="startConsultation(${a.id})"
+                <button onclick="createPrescriptionFromAppointment(${a.id})"
                     style="padding: 6px 12px; border: none; border-radius: 6px;
                            background: var(--primary-lighter); color: white;
-                           cursor: pointer; font-size: 13px;">
-                    Start
+                           cursor: pointer; font-size: 13px; display: inline-flex;
+                           align-items: center; gap: 6px;">
+                    <i class="fas fa-prescription-bottle-medical"></i>
+                    Create Prescription
+                </button>
+                <button onclick="startConsultation(${a.id})"
+                    style="padding: 6px 12px; border: none; border-radius: 6px;
+                           background: #10b981; color: white;
+                           cursor: pointer; font-size: 13px; display: inline-flex;
+                           align-items: center; gap: 6px;">
+                    <i class="fas fa-stethoscope"></i>
+                    Start Consultation
                 </button>
             </div>` : ''}
     </div>`;
 }
-
 /* ---------- actions ---------- */
+
 function startConsultation(id) {
-    const a = allAppointments.find((x) => x.id === id);
-    if (!a) return;
-    if (typeof showToast === 'function') {
-        showToast(`Starting consultation with ${getPatientName(a)}`, 'info');
+    const appointment = allAppointments.find(
+        (a) => Number(a.id) === Number(id)
+    );
+
+    if (!appointment) {
+        if (typeof showToast === 'function') {
+            showToast('Appointment not found', 'error');
+        }
+        return;
     }
-    // Optional: navigate to a consultation page
-    // window.location.href = `doc_consultation.html?appointmentId=${id}`;
+
+    if (typeof showToast === 'function') {
+        showToast(`Starting consultation with ${getPatientName(appointment)}`, 'info');
+    }
+
+    // Optional: route to a consultation page
+    // window.location.href = `doc_consultation.html?appointmentId=${appointment.id}`;
 }
+
+window.createPrescriptionFromAppointment = createPrescriptionFromAppointment;
+window.startConsultation = startConsultation;
+
 
 /* ---------- load ---------- */
 async function loadAppointments() {
@@ -290,6 +314,20 @@ async function loadAppointments() {
     }
 }
 
+function createPrescriptionFromAppointment(id) {
+
+    const appointment = allAppointments.find(
+        (a) => Number(a.id) === Number(id)
+    );
+
+    if (!appointment) {
+        showToast("Appointment not found", "error");
+        return;
+    }
+
+    window.location.href =
+        `doc_newprescriptions.html?appointmentId=${appointment.id}`;
+}
 /* ---------- init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
     // Filter tabs
@@ -309,8 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAppointments();
 });
 
-/* expose for inline onclick */
-window.startConsultation = startConsultation;
+
 </script>
 </body>
 </html>
